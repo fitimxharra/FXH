@@ -7,11 +7,19 @@
   const FEEDBACK_EMAIL = 'fitim@xharra.com';
   const FEEDBACK_ENDPOINT = 'https://formsubmit.co/ajax/fitim@xharra.com';
   const SHARE_URL = 'https://app.fitimxharra.com';
+  const FEEDBACK_SUBMITTED_KEY = 'fxhcam:feedbackSubmitted:v1';
+  const FEEDBACK_COOLDOWN_KEY = 'fxhcam:feedbackAutoCooldownUntil:v1';
+  const FIRST_FEEDBACK_PROMPT_SECONDS = 60;
+  const SECOND_FEEDBACK_DELAY_SECONDS = 120;
   let remoteStatus = null;
   let deferredInstallPrompt = null;
   let originalGetUserMedia = null;
   let uiReady = false;
   let inlineObserver = null;
+  let activeUseSeconds = 0;
+  let feedbackAutoStage = 0; // 0 = first prompt pending, 1 = second prompt pending, 2 = done for now
+  let nextFeedbackPromptAt = FIRST_FEEDBACK_PROMPT_SECONDS;
+  let feedbackUsageTimer = null;
 
   function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -197,7 +205,8 @@
     if (el) el.remove();
   }
 
-  function openFeedback() {
+  function openFeedback(options = {}) {
+    const autoPrompt = options.auto === true;
     closeModal();
     const wrap = document.createElement('div');
     wrap.id = 'fxhBetaModal';
@@ -265,6 +274,10 @@
         const data = await response.json().catch(() => ({}));
         if (!response.ok || data.success === false) throw new Error(data.message || 'Feedback could not be sent.');
 
+        try { localStorage.setItem(FEEDBACK_SUBMITTED_KEY, '1'); } catch (_) {}
+        if (feedbackUsageTimer) { clearInterval(feedbackUsageTimer); feedbackUsageTimer = null; }
+        feedbackAutoStage = 2;
+
         box.innerHTML = `
           <div class="fxh-beta-kicker"><span class="fxh-beta-dot"></span> FEEDBACK SENT</div>
           <h2>Thank you for making FXH CAM better.</h2>
@@ -311,7 +324,19 @@
     }
 
     actions.appendChild(submit);
-    actions.appendChild(makeButton('CANCEL', 'fxh-beta-ghost', closeModal));
+    actions.appendChild(makeButton(autoPrompt ? 'NOT NOW' : 'CANCEL', 'fxh-beta-ghost', () => {
+      closeModal();
+      if (autoPrompt) {
+        if (feedbackAutoStage === 1) {
+          nextFeedbackPromptAt = activeUseSeconds + SECOND_FEEDBACK_DELAY_SECONDS;
+        } else {
+          try { localStorage.setItem(FEEDBACK_COOLDOWN_KEY, String(Date.now() + 24 * 60 * 60 * 1000)); } catch (_) {}
+        }
+      } else {
+        feedbackAutoStage = 2;
+        try { localStorage.setItem(FEEDBACK_COOLDOWN_KEY, String(Date.now() + 24 * 60 * 60 * 1000)); } catch (_) {}
+      }
+    }));
     box.appendChild(stars);
     box.appendChild(ratingLabel);
     box.appendChild(textarea);
@@ -358,7 +383,7 @@
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-actions';
     actions.appendChild(makeButton(isStandalone() ? 'APP INSTALLED' : 'INSTALL FXH CAM', 'fxh-beta-primary', installApp));
-    actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', openFeedback));
+    actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', () => openFeedback({ auto: false })));
     actions.appendChild(makeButton('SHARE WITH A FRIEND', 'fxh-beta-secondary', shareApp));
     actions.appendChild(makeButton('CONTINUE TESTING', 'fxh-beta-ghost', closeModal));
     box.appendChild(actions);
@@ -367,6 +392,41 @@
     box.appendChild(small);
     wrap.appendChild(box);
     document.body.appendChild(wrap);
+  }
+
+  function feedbackWasSubmitted() {
+    try { return localStorage.getItem(FEEDBACK_SUBMITTED_KEY) === '1'; } catch (_) { return false; }
+  }
+
+  function feedbackCooldownActive() {
+    try {
+      const until = Number(localStorage.getItem(FEEDBACK_COOLDOWN_KEY) || 0);
+      return Number.isFinite(until) && until > Date.now();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function startFeedbackUsageTimer() {
+    if (feedbackUsageTimer || feedbackWasSubmitted() || feedbackCooldownActive() || isBlocked()) return;
+    feedbackUsageTimer = setInterval(() => {
+      if (document.visibilityState !== 'visible' || isBlocked()) return;
+      if (document.getElementById('fxhBetaModal')) return;
+      activeUseSeconds += 1;
+      if (feedbackAutoStage >= 2 || activeUseSeconds < nextFeedbackPromptAt) return;
+
+      if (feedbackAutoStage === 0) {
+        feedbackAutoStage = 1;
+        openFeedback({ auto: true });
+        return;
+      }
+
+      if (feedbackAutoStage === 1) {
+        feedbackAutoStage = 2;
+        openFeedback({ auto: true });
+        try { localStorage.setItem(FEEDBACK_COOLDOWN_KEY, String(Date.now() + 24 * 60 * 60 * 1000)); } catch (_) {}
+      }
+    }, 1000);
   }
 
   function showEndedModal() {
@@ -388,7 +448,7 @@
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-actions';
     actions.appendChild(makeButton('OPEN MY GALLERY', 'fxh-beta-primary', openGallery));
-    actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', openFeedback));
+    actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', () => openFeedback({ auto: false })));
     actions.appendChild(makeButton('SHARE FXH CAM', 'fxh-beta-secondary', shareApp));
     if (remoteStatus && remoteStatus.next_url) {
       const a = document.createElement('a');
@@ -433,7 +493,7 @@
 
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-profile-actions';
-    actions.appendChild(makeButton('★ RATE BETA', 'fxh-rate', openFeedback));
+    actions.appendChild(makeButton('★ RATE BETA', 'fxh-rate', () => openFeedback({ auto: false })));
     actions.appendChild(makeButton('SHARE APP', '', shareApp));
     if (!isStandalone()) actions.appendChild(makeButton('INSTALL APP', 'fxh-install', installApp));
 
@@ -478,7 +538,7 @@
     inlineObserver = new MutationObserver(mountInlineControls);
     inlineObserver.observe(document.getElementById('root') || document.body, { childList: true, subtree: true });
     if (isBlocked()) showEndedModal();
-    else showInfoModal(false);
+    else startFeedbackUsageTimer();
   }
 
   window.addEventListener('beforeinstallprompt', (event) => {
