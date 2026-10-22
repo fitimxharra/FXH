@@ -269,14 +269,29 @@
       };
 
       try {
-        const response = await fetch(FEEDBACK_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
+        const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        const timeoutId = setTimeout(() => {
+          if (controller) controller.abort();
+        }, 12000);
+
+        let response;
+        try {
+          response = await Promise.race([
+            fetch(FEEDBACK_ENDPOINT, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify(payload),
+              ...(controller ? { signal: controller.signal } : {})
+            }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Feedback request timed out.')), 12500))
+          ]);
+        } finally {
+          clearTimeout(timeoutId);
+        }
+
         const data = await response.json().catch(() => ({}));
         if (!response.ok || data.success === false) throw new Error(data.message || 'Feedback could not be sent.');
 
@@ -300,7 +315,10 @@
         submit.textContent = 'TRY AGAIN';
         status.hidden = false;
         status.className = 'fxh-feedback-status is-error';
-        status.textContent = 'Could not send feedback right now. Please check your connection and try again.';
+        const timedOut = error && (error.name === 'AbortError' || /timed out/i.test(error.message || ''));
+        status.textContent = timedOut
+          ? 'The feedback service took too long to respond. Please tap TRY AGAIN.'
+          : 'Could not send feedback right now. Please check your connection and try again.';
       }
     });
     submit.disabled = true;
