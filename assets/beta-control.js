@@ -6,7 +6,7 @@
   const INSTALL_KEY = 'fxhcam:betaIntroSeen:v2';
   // Recipient is intentionally not shown in the UI. After FormSubmit activation,
   // replace this encoded bootstrap address with FormSubmit's random endpoint token.
-  const FEEDBACK_ENDPOINT = 'https://formsubmit.co/ajax/' + atob('Zml0aW0ueGhhcnJhQGdtYWlsLmNvbQ==');
+  const FEEDBACK_ENDPOINT = 'https://formsubmit.co/' + atob('Zml0aW0ueGhhcnJhQGdtYWlsLmNvbQ==');
   const SHARE_URL = 'https://app.fitimxharra.com';
   const FEEDBACK_SUBMITTED_KEY = 'fxhcam:feedbackSubmitted:v1';
   const FEEDBACK_COOLDOWN_KEY = 'fxhcam:feedbackAutoCooldownUntil:v1';
@@ -251,7 +251,7 @@
 
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-actions';
-    const submit = makeButton('SUBMIT FEEDBACK', 'fxh-beta-primary fxh-feedback-submit', async () => {
+    const submit = makeButton('SUBMIT FEEDBACK', 'fxh-beta-primary fxh-feedback-submit', () => {
       if (!rating || submitting) return;
       submitting = true;
       submit.disabled = true;
@@ -259,43 +259,59 @@
       status.hidden = true;
       status.className = 'fxh-feedback-status';
 
-      const payload = {
+      const frameName = `fxhFeedbackFrame_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      const iframe = document.createElement('iframe');
+      iframe.name = frameName;
+      iframe.title = 'FXH CAM feedback submission';
+      iframe.setAttribute('aria-hidden', 'true');
+      iframe.tabIndex = -1;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = FEEDBACK_ENDPOINT;
+      form.target = frameName;
+      form.style.display = 'none';
+
+      const fields = {
         _subject: `FXH CAM Public Beta — ${rating}/5 stars`,
         _template: 'table',
+        _captcha: 'false',
         _url: SHARE_URL,
+        _honey: '',
         rating: `${rating}/5`,
         comment: textarea.value.trim() || '(No additional comment)',
         page: window.location.href,
         device: navigator.userAgent
       };
 
+      Object.entries(fields).forEach(([name, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      });
+      document.body.appendChild(form);
+
       try {
-        const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-        const timeoutId = setTimeout(() => {
-          if (controller) controller.abort();
-        }, 5000);
+        form.submit();
+      } catch (_) {
+        submitting = false;
+        submit.disabled = false;
+        submit.textContent = 'TRY AGAIN';
+        status.hidden = false;
+        status.className = 'fxh-feedback-status is-error';
+        status.textContent = 'Could not start feedback delivery. Please try again.';
+        form.remove();
+        iframe.remove();
+        return;
+      }
 
-        let response;
-        try {
-          response = await Promise.race([
-            fetch(FEEDBACK_ENDPOINT, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              },
-              body: JSON.stringify(payload),
-              ...(controller ? { signal: controller.signal } : {})
-            }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Feedback request timed out.')), 5200))
-          ]);
-        } finally {
-          clearTimeout(timeoutId);
-        }
-
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || data.success === false) throw new Error(data.message || 'Feedback could not be sent.');
-
+      // Do not hold the user on a cross-origin response. The submission continues
+      // in the hidden frame while FXH CAM immediately acknowledges the action.
+      setTimeout(() => {
         try { localStorage.setItem(FEEDBACK_SUBMITTED_KEY, '1'); } catch (_) {}
         if (feedbackUsageTimer) { clearInterval(feedbackUsageTimer); feedbackUsageTimer = null; }
         feedbackAutoStage = 2;
@@ -303,24 +319,16 @@
         box.innerHTML = `
           <div class="fxh-beta-kicker"><span class="fxh-beta-dot"></span> FEEDBACK SENT</div>
           <h2>Thank you for making FXH CAM better.</h2>
-          <p>Your rating and comment have been submitted.</p>
+          <p>Your feedback has been submitted.</p>
         `;
         const doneActions = document.createElement('div');
         doneActions.className = 'fxh-beta-actions';
         doneActions.appendChild(makeButton('SHARE WITH A FRIEND', 'fxh-beta-primary', shareApp));
         doneActions.appendChild(makeButton('CLOSE', 'fxh-beta-ghost', closeModal));
         box.appendChild(doneActions);
-      } catch (error) {
-        submitting = false;
-        submit.disabled = false;
-        submit.textContent = 'TRY AGAIN';
-        status.hidden = false;
-        status.className = 'fxh-feedback-status is-error';
-        const timedOut = error && (error.name === 'AbortError' || /timed out/i.test(error.message || ''));
-        status.textContent = timedOut
-          ? 'The feedback service is taking longer than expected. Please tap TRY AGAIN.'
-          : 'Could not send feedback right now. Please check your connection and try again.';
-      }
+
+        setTimeout(() => { form.remove(); iframe.remove(); }, 5000);
+      }, 650);
     });
     submit.disabled = true;
 
