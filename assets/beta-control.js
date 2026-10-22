@@ -4,8 +4,9 @@
   const BETA_END = Date.parse('2027-01-01T00:00:00+01:00');
   const STATUS_URL = '/beta-status.json';
   const INSTALL_KEY = 'fxhcam:betaIntroSeen:v2';
-  const FEEDBACK_EMAIL = 'fitim@xharra.com';
-  const FEEDBACK_ENDPOINT = 'https://formsubmit.co/ajax/fitim@xharra.com';
+  // Recipient is intentionally not shown in the UI. After FormSubmit activation,
+  // replace this encoded bootstrap address with FormSubmit's random endpoint token.
+  const FEEDBACK_ENDPOINT = 'https://formsubmit.co/ajax/' + atob('Zml0aW0ueGhhcnJhQGdtYWlsLmNvbQ==');
   const SHARE_URL = 'https://app.fitimxharra.com';
   const FEEDBACK_SUBMITTED_KEY = 'fxhcam:feedbackSubmitted:v1';
   const FEEDBACK_COOLDOWN_KEY = 'fxhcam:feedbackAutoCooldownUntil:v1';
@@ -272,7 +273,7 @@
         const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
         const timeoutId = setTimeout(() => {
           if (controller) controller.abort();
-        }, 12000);
+        }, 5000);
 
         let response;
         try {
@@ -286,7 +287,7 @@
               body: JSON.stringify(payload),
               ...(controller ? { signal: controller.signal } : {})
             }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Feedback request timed out.')), 12500))
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Feedback request timed out.')), 5200))
           ]);
         } finally {
           clearTimeout(timeoutId);
@@ -317,7 +318,7 @@
         status.className = 'fxh-feedback-status is-error';
         const timedOut = error && (error.name === 'AbortError' || /timed out/i.test(error.message || ''));
         status.textContent = timedOut
-          ? 'The feedback service took too long to respond. Please tap TRY AGAIN.'
+          ? 'The feedback service is taking longer than expected. Please tap TRY AGAIN.'
           : 'Could not send feedback right now. Please check your connection and try again.';
       }
     });
