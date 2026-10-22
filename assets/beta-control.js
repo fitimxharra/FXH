@@ -82,6 +82,11 @@
       .fxh-beta-inline .fxh-beta-label{font-size:9px;font-weight:900;letter-spacing:.09em;color:#d1a833;text-transform:uppercase;opacity:.86;white-space:nowrap}
       .fxh-beta-inline button{min-height:34px;border-radius:999px;padding:7px 13px;border:1px solid rgba(255,198,83,.38);background:rgba(5,7,6,.72);color:#f2eee1;font-size:10px;font-weight:900;letter-spacing:.055em;cursor:pointer;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
       .fxh-beta-inline button.fxh-install{background:#ffc653;color:#17130a;border-color:#ffc653}
+      .fxh-home-share{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px auto 18px;padding:11px 13px;width:min(360px,calc(100% - 36px));box-sizing:border-box;border:1px solid rgba(255,198,83,.34);border-radius:15px;background:rgba(8,12,10,.80);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;position:relative;z-index:2}
+      .fxh-home-share-copy{min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}
+      .fxh-home-share-copy strong{font-size:11px;line-height:1.2;color:#ffc653;letter-spacing:.055em;text-transform:uppercase}
+      .fxh-home-share-copy span{font-size:10.5px;line-height:1.3;color:#a8b0ad}
+      .fxh-home-share button{flex:0 0 auto;min-height:38px;border-radius:999px;padding:8px 12px;border:1px solid #ffc653;background:#ffc653;color:#17130a;font-size:10px;font-weight:900;letter-spacing:.045em;cursor:pointer}
       .fxh-beta-profile-panel{margin:14px 20px 18px;padding:14px 15px;border-radius:16px;border:1px solid rgba(255,198,83,.24);background:linear-gradient(135deg,rgba(19,25,22,.96),rgba(9,13,12,.96));display:flex;align-items:center;justify-content:space-between;gap:12px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
       .fxh-beta-profile-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
       .fxh-beta-profile-copy strong{color:#ffc653;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
@@ -120,7 +125,7 @@
       .fxh-feedback-status.is-success{border-color:rgba(255,198,83,.38);color:#ffc653;font-weight:800}
       .fxh-feedback-status.is-error{border-color:rgba(239,76,58,.42);color:#ff9d91}
       .fxh-share-copy{font-size:12px!important;color:#9ba5a1!important;text-align:center;margin-top:9px!important}
-      @media(max-width:420px){.fxh-beta-modal{padding:19px;border-radius:18px}.fxh-beta-modal h2{font-size:23px}.fxh-feedback-star{font-size:34px;min-width:34px}.fxh-beta-inline{gap:7px;margin-top:10px}.fxh-beta-profile-panel{margin:12px 20px 16px;align-items:flex-start;flex-direction:column}.fxh-beta-profile-actions{width:100%;flex-wrap:wrap}.fxh-beta-profile-actions button{flex:1 1 calc(50% - 4px);padding-left:10px;padding-right:10px}}
+      @media(max-width:420px){.fxh-home-share{width:calc(100% - 32px);margin-top:10px;margin-bottom:18px;padding:10px 11px}.fxh-home-share-copy span{font-size:10px}.fxh-home-share button{padding:8px 10px}.fxh-beta-modal{padding:19px;border-radius:18px}.fxh-beta-modal h2{font-size:23px}.fxh-feedback-star{font-size:34px;min-width:34px}.fxh-beta-inline{gap:7px;margin-top:10px}.fxh-beta-profile-panel{margin:12px 20px 16px;align-items:flex-start;flex-direction:column}.fxh-beta-profile-actions{width:100%;flex-wrap:wrap}.fxh-beta-profile-actions button{flex:1 1 calc(50% - 4px);padding-left:10px;padding-right:10px}}
       @media(display-mode:standalone){.fxh-beta-inline .fxh-install,.fxh-beta-profile-panel .fxh-install{display:none}}
     `;
     document.head.appendChild(style);
@@ -217,6 +222,7 @@
       <div class="fxh-beta-kicker"><span class="fxh-beta-dot"></span> PUBLIC BETA FEEDBACK</div>
       <h2>Rate FXH CAM</h2>
       <p>Tap the stars, leave a comment if you want, then submit. Your feedback helps us build a better final release.</p>
+      <div class="fxh-beta-note"><b>One feedback is enough.</b><br>Once you submit feedback, we won’t ask you again.</div>
     `;
 
     let rating = 0;
@@ -463,10 +469,37 @@
     document.body.appendChild(wrap);
   }
 
+  function mountHomeShare() {
+    const existing = document.getElementById('fxhHomeShareCard');
+    const start = document.querySelector('.analog-start');
+    if (!start || isBlocked()) {
+      if (existing) existing.remove();
+      return;
+    }
+    if (existing && existing.previousElementSibling === start) return;
+    if (existing) existing.remove();
+
+    const card = document.createElement('div');
+    card.id = 'fxhHomeShareCard';
+    card.className = 'fxh-home-share';
+
+    const copy = document.createElement('div');
+    copy.className = 'fxh-home-share-copy';
+    copy.innerHTML = '<strong>Enjoying FXH CAM?</strong><span>Share the Public Beta with a friend.</span>';
+
+    const button = makeButton('↗ SHARE', '', shareApp);
+    button.setAttribute('aria-label', 'Share FXH CAM with a friend');
+
+    card.appendChild(copy);
+    card.appendChild(button);
+    start.insertAdjacentElement('afterend', card);
+  }
+
   function mountInlineControls() {
     // Remove the old floating/hero controls from earlier beta builds.
     document.getElementById('fxhBetaDock')?.remove();
     document.getElementById('fxhBetaInline')?.remove();
+    mountHomeShare();
 
     const existing = document.getElementById('fxhBetaProfileCard');
     const profile = document.querySelector('.profileV13') || document.querySelector('.profileScreen');
