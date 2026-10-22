@@ -5,6 +5,8 @@
   const STATUS_URL = '/beta-status.json';
   const INSTALL_KEY = 'fxhcam:betaIntroSeen:v2';
   const FEEDBACK_EMAIL = 'fitim@xharra.com';
+  const FEEDBACK_ENDPOINT = 'https://formsubmit.co/ajax/fitim@xharra.com';
+  const SHARE_URL = 'https://app.fitimxharra.com';
   let remoteStatus = null;
   let deferredInstallPrompt = null;
   let originalGetUserMedia = null;
@@ -106,7 +108,11 @@
       .fxh-feedback-textarea::placeholder{color:#737e79}
       .fxh-feedback-submit[disabled]{opacity:.45;cursor:not-allowed}
       .fxh-feedback-email-note{margin-top:9px!important;text-align:center;font-size:11px!important;color:#87918d!important}
-      @media(max-width:420px){.fxh-beta-modal{padding:19px;border-radius:18px}.fxh-beta-modal h2{font-size:23px}.fxh-feedback-star{font-size:34px;min-width:34px}.fxh-beta-inline{gap:7px;margin-top:10px}.fxh-beta-profile-panel{margin:12px 20px 16px;align-items:flex-start;flex-direction:column}.fxh-beta-profile-actions{width:100%}.fxh-beta-profile-actions button{flex:1}}
+      .fxh-feedback-status{margin:12px 0 0;padding:12px 13px;border-radius:12px;background:#111a17;border:1px solid #23312c;color:#d8dedb;font-size:13px;line-height:1.45;text-align:center}
+      .fxh-feedback-status.is-success{border-color:rgba(255,198,83,.38);color:#ffc653;font-weight:800}
+      .fxh-feedback-status.is-error{border-color:rgba(239,76,58,.42);color:#ff9d91}
+      .fxh-share-copy{font-size:12px!important;color:#9ba5a1!important;text-align:center;margin-top:9px!important}
+      @media(max-width:420px){.fxh-beta-modal{padding:19px;border-radius:18px}.fxh-beta-modal h2{font-size:23px}.fxh-feedback-star{font-size:34px;min-width:34px}.fxh-beta-inline{gap:7px;margin-top:10px}.fxh-beta-profile-panel{margin:12px 20px 16px;align-items:flex-start;flex-direction:column}.fxh-beta-profile-actions{width:100%;flex-wrap:wrap}.fxh-beta-profile-actions button{flex:1 1 calc(50% - 4px);padding-left:10px;padding-right:10px}}
       @media(display-mode:standalone){.fxh-beta-inline .fxh-install,.fxh-beta-profile-panel .fxh-install{display:none}}
     `;
     document.head.appendChild(style);
@@ -140,6 +146,52 @@
     }
   }
 
+  async function shareApp() {
+    const shareData = {
+      title: 'FXH CAM — Public Beta',
+      text: 'Try FXH CAM — 35mm, Polaroid and VHS-inspired photography. Public Beta.',
+      url: SHARE_URL
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(SHARE_URL);
+        showShareConfirmation('Link copied — share it with your friends.');
+        return;
+      }
+      window.prompt('Copy and share this link:', SHARE_URL);
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(SHARE_URL);
+          showShareConfirmation('Link copied — share it with your friends.');
+          return;
+        }
+      } catch (_) {}
+      window.prompt('Copy and share this link:', SHARE_URL);
+    }
+  }
+
+  function showShareConfirmation(message) {
+    const existing = document.getElementById('fxhShareToast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'fxhShareToast';
+    toast.textContent = message;
+    Object.assign(toast.style, {
+      position: 'fixed', left: '50%', bottom: '86px', transform: 'translateX(-50%)',
+      zIndex: '10050', background: '#111916', color: '#ffc653', border: '1px solid rgba(255,198,83,.38)',
+      borderRadius: '999px', padding: '10px 15px', font: '800 12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif',
+      boxShadow: '0 10px 30px rgba(0,0,0,.35)', maxWidth: 'calc(100% - 32px)', textAlign: 'center'
+    });
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2600);
+  }
+
   function closeModal() {
     const el = document.getElementById('fxhBetaModal');
     if (el) el.remove();
@@ -154,11 +206,12 @@
     box.className = 'fxh-beta-modal';
     box.innerHTML = `
       <div class="fxh-beta-kicker"><span class="fxh-beta-dot"></span> PUBLIC BETA FEEDBACK</div>
-      <h2>Rate your FXH CAM experience</h2>
-      <p>Your feedback helps us improve the final version.</p>
+      <h2>Rate FXH CAM</h2>
+      <p>Tap the stars, leave a comment if you want, then submit. Your feedback helps us build a better final release.</p>
     `;
 
     let rating = 0;
+    let submitting = false;
     const stars = document.createElement('div');
     stars.className = 'fxh-feedback-stars';
     stars.setAttribute('role', 'radiogroup');
@@ -170,19 +223,66 @@
 
     const textarea = document.createElement('textarea');
     textarea.className = 'fxh-feedback-textarea';
-    textarea.placeholder = 'Tell us what you liked, what did not work, or what you would improve…';
+    textarea.placeholder = 'Provide a comment…';
     textarea.setAttribute('aria-label', 'Feedback comment');
+    textarea.maxLength = 1500;
+
+    const status = document.createElement('div');
+    status.className = 'fxh-feedback-status';
+    status.hidden = true;
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
 
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-actions';
-    const submit = makeButton('SUBMIT FEEDBACK', 'fxh-beta-primary fxh-feedback-submit', () => {
-      if (!rating) return;
-      const comment = textarea.value.trim();
-      const subject = encodeURIComponent(`FXH CAM Public Beta — ${rating}/5 stars`);
-      const body = encodeURIComponent(
-        `Hi Fitim,\n\nI rated FXH CAM Public Beta ${rating}/5 stars.\n\nComment:\n${comment || '(No additional comment)'}\n\nDevice / browser:\n${navigator.userAgent}\n\nThanks!`
-      );
-      window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+    const submit = makeButton('SUBMIT FEEDBACK', 'fxh-beta-primary fxh-feedback-submit', async () => {
+      if (!rating || submitting) return;
+      submitting = true;
+      submit.disabled = true;
+      submit.textContent = 'SENDING…';
+      status.hidden = true;
+      status.className = 'fxh-feedback-status';
+
+      const payload = {
+        _subject: `FXH CAM Public Beta — ${rating}/5 stars`,
+        _template: 'table',
+        _url: SHARE_URL,
+        rating: `${rating}/5`,
+        comment: textarea.value.trim() || '(No additional comment)',
+        page: window.location.href,
+        device: navigator.userAgent
+      };
+
+      try {
+        const response = await fetch(FEEDBACK_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data.success === false) throw new Error(data.message || 'Feedback could not be sent.');
+
+        box.innerHTML = `
+          <div class="fxh-beta-kicker"><span class="fxh-beta-dot"></span> FEEDBACK SENT</div>
+          <h2>Thank you for making FXH CAM better.</h2>
+          <p>Your rating and comment have been submitted.</p>
+        `;
+        const doneActions = document.createElement('div');
+        doneActions.className = 'fxh-beta-actions';
+        doneActions.appendChild(makeButton('SHARE WITH A FRIEND', 'fxh-beta-primary', shareApp));
+        doneActions.appendChild(makeButton('CLOSE', 'fxh-beta-ghost', closeModal));
+        box.appendChild(doneActions);
+      } catch (error) {
+        submitting = false;
+        submit.disabled = false;
+        submit.textContent = 'TRY AGAIN';
+        status.hidden = false;
+        status.className = 'fxh-feedback-status is-error';
+        status.textContent = 'Could not send feedback right now. Please check your connection and try again.';
+      }
     });
     submit.disabled = true;
 
@@ -215,11 +315,8 @@
     box.appendChild(stars);
     box.appendChild(ratingLabel);
     box.appendChild(textarea);
+    box.appendChild(status);
     box.appendChild(actions);
-    const note = document.createElement('p');
-    note.className = 'fxh-feedback-email-note';
-    note.textContent = 'Submit opens your email app and sends the feedback to fitim@xharra.com.';
-    box.appendChild(note);
     wrap.appendChild(box);
     document.body.appendChild(wrap);
     setTimeout(() => stars.querySelector('button')?.focus(), 0);
@@ -262,6 +359,7 @@
     actions.className = 'fxh-beta-actions';
     actions.appendChild(makeButton(isStandalone() ? 'APP INSTALLED' : 'INSTALL FXH CAM', 'fxh-beta-primary', installApp));
     actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', openFeedback));
+    actions.appendChild(makeButton('SHARE WITH A FRIEND', 'fxh-beta-secondary', shareApp));
     actions.appendChild(makeButton('CONTINUE TESTING', 'fxh-beta-ghost', closeModal));
     box.appendChild(actions);
     const small = document.createElement('small');
@@ -291,6 +389,7 @@
     actions.className = 'fxh-beta-actions';
     actions.appendChild(makeButton('OPEN MY GALLERY', 'fxh-beta-primary', openGallery));
     actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', openFeedback));
+    actions.appendChild(makeButton('SHARE FXH CAM', 'fxh-beta-secondary', shareApp));
     if (remoteStatus && remoteStatus.next_url) {
       const a = document.createElement('a');
       a.className = 'fxh-beta-secondary';
@@ -335,6 +434,7 @@
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-profile-actions';
     actions.appendChild(makeButton('★ RATE BETA', 'fxh-rate', openFeedback));
+    actions.appendChild(makeButton('SHARE APP', '', shareApp));
     if (!isStandalone()) actions.appendChild(makeButton('INSTALL APP', 'fxh-install', installApp));
 
     card.appendChild(copy);
