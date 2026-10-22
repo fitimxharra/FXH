@@ -72,6 +72,14 @@
       .fxh-beta-inline .fxh-beta-label{font-size:9px;font-weight:900;letter-spacing:.09em;color:#d1a833;text-transform:uppercase;opacity:.86;white-space:nowrap}
       .fxh-beta-inline button{min-height:34px;border-radius:999px;padding:7px 13px;border:1px solid rgba(255,198,83,.38);background:rgba(5,7,6,.72);color:#f2eee1;font-size:10px;font-weight:900;letter-spacing:.055em;cursor:pointer;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
       .fxh-beta-inline button.fxh-install{background:#ffc653;color:#17130a;border-color:#ffc653}
+      .fxh-beta-profile-panel{margin:14px 20px 18px;padding:14px 15px;border-radius:16px;border:1px solid rgba(255,198,83,.24);background:linear-gradient(135deg,rgba(19,25,22,.96),rgba(9,13,12,.96));display:flex;align-items:center;justify-content:space-between;gap:12px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+      .fxh-beta-profile-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
+      .fxh-beta-profile-copy strong{color:#ffc653;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+      .fxh-beta-profile-copy span{color:#939e99;font-size:11px;line-height:1.25}
+      .fxh-beta-profile-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+      .fxh-beta-profile-actions button{min-height:38px;border-radius:999px;padding:8px 13px;border:1px solid rgba(255,198,83,.38);background:#101714;color:#f4f1e8;font-size:10px;font-weight:900;letter-spacing:.055em;cursor:pointer}
+      .fxh-beta-profile-actions .fxh-rate{background:#ffc653;color:#17130a;border-color:#ffc653}
+      .fxh-beta-profile-actions .fxh-install{background:transparent;color:#ffc653}
       .fxh-beta-backdrop{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.80);display:grid;place-items:center;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
       .fxh-beta-modal{width:min(430px,100%);max-height:calc(100% - 24px);overflow:auto;background:#0b100e;color:#f4f1e8;border:1px solid rgba(255,198,83,.42);border-radius:20px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.5);box-sizing:border-box}
       .fxh-beta-kicker{display:inline-flex;align-items:center;gap:7px;color:#ffc653;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
@@ -98,8 +106,8 @@
       .fxh-feedback-textarea::placeholder{color:#737e79}
       .fxh-feedback-submit[disabled]{opacity:.45;cursor:not-allowed}
       .fxh-feedback-email-note{margin-top:9px!important;text-align:center;font-size:11px!important;color:#87918d!important}
-      @media(max-width:420px){.fxh-beta-modal{padding:19px;border-radius:18px}.fxh-beta-modal h2{font-size:23px}.fxh-feedback-star{font-size:34px;min-width:34px}.fxh-beta-inline{gap:7px;margin-top:10px}}
-      @media(display-mode:standalone){.fxh-beta-inline .fxh-install{display:none}}
+      @media(max-width:420px){.fxh-beta-modal{padding:19px;border-radius:18px}.fxh-beta-modal h2{font-size:23px}.fxh-feedback-star{font-size:34px;min-width:34px}.fxh-beta-inline{gap:7px;margin-top:10px}.fxh-beta-profile-panel{margin:12px 20px 16px;align-items:flex-start;flex-direction:column}.fxh-beta-profile-actions{width:100%}.fxh-beta-profile-actions button{flex:1}}
+      @media(display-mode:standalone){.fxh-beta-inline .fxh-install,.fxh-beta-profile-panel .fxh-install{display:none}}
     `;
     document.head.appendChild(style);
   }
@@ -244,7 +252,7 @@
     box.className = 'fxh-beta-modal';
     box.innerHTML = `
       <div class="fxh-beta-kicker"><span class="fxh-beta-dot"></span> PUBLIC BETA · FREE</div>
-      <h2>Shoot the moment. Keep the feeling.</h2>
+      <h2>Make moments timeless.</h2>
       <p>Explore 35mm film, instant Polaroid-style photography and VHS-inspired video in one camera experience.</p>
       <div class="fxh-beta-note"><b>Free Public Beta until 31 December 2026.</b><br>The beta camera features will deactivate on 1 January 2027 as FXH CAM prepares to move to its permanent domain.</div>
       <p>Your photos and videos stay on <b>your device</b> in this beta. They are not uploaded to a cloud account. Gallery access will remain available after the beta ends so you can download your media.</p>
@@ -297,32 +305,44 @@
   }
 
   function mountInlineControls() {
+    // Remove the old floating/hero controls from earlier beta builds.
     document.getElementById('fxhBetaDock')?.remove();
-    const old = document.getElementById('fxhBetaInline');
-    const home = document.querySelector('.homeScreen');
-    if (!home || isBlocked()) {
-      if (old) old.remove();
+    document.getElementById('fxhBetaInline')?.remove();
+
+    const existing = document.getElementById('fxhBetaProfileCard');
+    const profile = document.querySelector('.profileV13') || document.querySelector('.profileScreen');
+
+    if (!profile || isBlocked()) {
+      if (existing) existing.remove();
       return;
     }
 
-    const target = home.querySelector('.analog-camera-info') || home.querySelector('.homeSharedIntro') || home;
-    if (old && old.parentElement === target) {
-      const install = old.querySelector('.fxh-install');
+    if (existing && profile.contains(existing)) {
+      const install = existing.querySelector('.fxh-install');
       if (install) install.style.display = isStandalone() ? 'none' : '';
       return;
     }
-    if (old) old.remove();
+    if (existing) existing.remove();
 
-    const row = document.createElement('div');
-    row.id = 'fxhBetaInline';
-    row.className = 'fxh-beta-inline';
-    const label = document.createElement('span');
-    label.className = 'fxh-beta-label';
-    label.textContent = 'PUBLIC BETA · FREE UNTIL 31 DEC';
-    row.appendChild(label);
-    row.appendChild(makeButton('RATE BETA', 'fxh-feedback', openFeedback));
-    if (!isStandalone()) row.appendChild(makeButton('INSTALL APP', 'fxh-install', installApp));
-    target.appendChild(row);
+    const card = document.createElement('div');
+    card.id = 'fxhBetaProfileCard';
+    card.className = 'fxh-beta-profile-panel';
+
+    const copy = document.createElement('div');
+    copy.className = 'fxh-beta-profile-copy';
+    copy.innerHTML = '<strong>PUBLIC BETA</strong><span>Free until 31 December 2026</span>';
+
+    const actions = document.createElement('div');
+    actions.className = 'fxh-beta-profile-actions';
+    actions.appendChild(makeButton('★ RATE BETA', 'fxh-rate', openFeedback));
+    if (!isStandalone()) actions.appendChild(makeButton('INSTALL APP', 'fxh-install', installApp));
+
+    card.appendChild(copy);
+    card.appendChild(actions);
+
+    const hero = profile.querySelector('.profileV13Hero');
+    if (hero && hero.parentNode) hero.insertAdjacentElement('afterend', card);
+    else profile.prepend(card);
   }
 
   function blockExpiredActions() {

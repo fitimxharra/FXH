@@ -80,3 +80,7 @@
   .profileV13Hero{padding:16px 12px 14px!important}
   .profileV13EditLink{min-width:104px!important;padding:0 11px!important;margin-inline:3px!important}
 }
+
+/* FXH CAM v86 — mobile-safe hero motto */
+.analog-headline{white-space:normal!important;max-width:100%!important;text-wrap:balance!important;overflow-wrap:normal!important;margin-left:auto!important;margin-right:auto!important;}
+@media (max-width:600px){.analog-headline{font-size:clamp(28px,8vw,37px)!important;line-height:1.06!important;padding:0 4px!important;}}
