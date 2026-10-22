@@ -1,0 +1,48 @@
+{
+  "id": "/",
+  "name": "Analog Cam: 35mm, Polaroid and VHS",
+  "short_name": "Analog Cam",
+  "description": "Analog Soul. Digital Heart. \u2014 35mm, Polaroid and VHS camera simulator.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050706",
+  "theme_color": "#050706",
+  "categories": [
+    "photo",
+    "photography"
+  ],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "prefer_related_applications": false
+}
