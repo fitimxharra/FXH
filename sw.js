@@ -1,5 +1,5 @@
 // bump this on every deploy so old caches get cleared
-const CACHE_NAME = "fxhcam-public-beta-v87";
+const CACHE_NAME = "fxhcam-public-beta-v88";
 
 // Precache only the app shell. Mode photos load on demand and are
 // cached with stale-while-revalidate. Do not precache camera streams
@@ -8,9 +8,9 @@ const CORE_ASSETS = [
   "/",
   "/index.html",
   "/manifest.webmanifest",
-  "/assets/app.js?v=87",
-  "/assets/beta-control.js?v=87",
-  "/assets/index.css?v=87",
+  "/assets/app.js?v=88",
+  "/assets/beta-control.js?v=88",
+  "/assets/index.css?v=88",
   "/favicon.svg",
   "/icon-192.png",
   "/icon-512.png",
