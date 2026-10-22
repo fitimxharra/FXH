@@ -20,9 +20,44 @@
   <link rel="preload" as="image" href="/assets/ae1-controls/ae1-shutter.png" />
   <title>FXH CAM — Public Beta</title>
   <!-- Public Beta control must load before the camera app -->
-  <script src="/assets/beta-control.js?v=89"></script>
-  <script type="module" crossorigin src="/assets/app.js?v=89"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index.css?v=89">
+  <script src="/assets/beta-control.js?v=90"></script>
+  <script type="module" crossorigin src="/assets/app.js?v=90"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index.css?v=90">
+
+  <!-- Basic browser UI protection. This deters casual inspection only; client-side code can never be made completely inaccessible. -->
+  <style>
+    html, body, #root { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+    img { -webkit-user-drag: none; user-drag: none; }
+  </style>
+  <script>
+    (() => {
+      const stop = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      };
+
+      document.addEventListener('contextmenu', stop, true);
+      document.addEventListener('dragstart', (event) => {
+        const target = event.target;
+        if (target && target.closest && target.closest('img, video, canvas')) stop(event);
+      }, true);
+
+      document.addEventListener('keydown', (event) => {
+        const key = String(event.key || '').toLowerCase();
+        const ctrlOrMeta = event.ctrlKey || event.metaKey;
+        const devTools =
+          event.key === 'F12' ||
+          (event.ctrlKey && key === 'u') ||
+          (event.ctrlKey && event.shiftKey && ['i', 'j', 'c'].includes(key)) ||
+          (event.metaKey && event.altKey && ['i', 'j', 'c'].includes(key));
+
+        if (devTools) stop(event);
+      }, true);
+    })();
+  </script>
+
 </head>
 <body>
   <div id="root"></div>
