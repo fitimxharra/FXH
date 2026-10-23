@@ -4,7 +4,6 @@
 .phone.analog.cameraScreenActive .cameraV12Stage .rangeFinderOverlay { display:none!important; }
 .phone.analog.cameraScreenActive .cameraV12Stage{background:#080706!important;overflow:hidden!important;}
 .phone.analog.cameraScreenActive .cameraV12Stage video{
-  filter:sepia(.055) saturate(.91) contrast(1.02) brightness(.94)!important;
   image-rendering:auto!important;
 }
 .phone.analog.cameraScreenActive .cameraV12Stage:before{
@@ -24,3 +23,9 @@
 .phone.analog.cameraScreenActive .analogViewfinderOverlay .vfFocus i.locked{border-color:rgba(245,196,83,.75)!important;color:rgba(245,196,83,.9)!important;box-shadow:0 0 9px rgba(245,196,83,.12)!important;}
 .phone.analog.cameraScreenActive .analogViewfinderOverlay .vfTop{top:5.5%!important;left:7.5%!important;right:7.5%!important;font-size:clamp(10px,2.25vw,17px)!important;}
 .phone.analog.cameraScreenActive .analogViewfinderOverlay .vfBottom{bottom:4.2%!important;left:7.5%!important;right:7.5%!important;font-size:clamp(8px,1.9vw,14px)!important;}
+
+/* v100: Do not override the video filter here.
+   FXH CAM's native film engine applies the selected stock live, immediately on tap. */
+.phone.analog.cameraScreenActive .cameraV12Stage video{
+  image-rendering:auto!important;
+}
