@@ -87,7 +87,7 @@
       .fxh-home-share-copy{min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}
       .fxh-home-share-copy strong{font-size:11px;line-height:1.2;color:#ffc653;letter-spacing:.055em;text-transform:uppercase}
       .fxh-home-share-copy span{font-size:10.5px;line-height:1.3;color:#a8b0ad}
-      .fxh-home-share button{flex:0 0 auto;min-height:38px;border-radius:999px;padding:8px 12px;border:1px solid #ffc653;background:#ffc653;color:#17130a;font-size:10px;font-weight:900;letter-spacing:.045em;cursor:pointer}
+      .fxh-home-share-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex:0 0 auto}\n      .fxh-home-share button{flex:0 0 auto;min-height:38px;border-radius:999px;padding:8px 12px;border:1px solid #ffc653;background:#ffc653;color:#17130a;font-size:10px;font-weight:900;letter-spacing:.045em;cursor:pointer}\n      .fxh-home-share .fxh-home-install{background:#0e1210;color:#ffc653;border-color:rgba(255,198,83,.55)}
       .fxh-beta-profile-panel{margin:14px 20px 18px;padding:14px 15px;border-radius:16px;border:1px solid rgba(255,198,83,.24);background:linear-gradient(135deg,rgba(19,25,22,.96),rgba(9,13,12,.96));display:flex;align-items:center;justify-content:space-between;gap:12px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
       .fxh-beta-profile-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
       .fxh-beta-profile-copy strong{color:#ffc653;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
@@ -126,7 +126,7 @@
       .fxh-feedback-status.is-success{border-color:rgba(255,198,83,.38);color:#ffc653;font-weight:800}
       .fxh-feedback-status.is-error{border-color:rgba(239,76,58,.42);color:#ff9d91}
       .fxh-share-copy{font-size:12px!important;color:#9ba5a1!important;text-align:center;margin-top:9px!important}
-      @media(max-width:420px){.fxh-home-share{width:calc(100% - 32px);margin-top:10px;margin-bottom:18px;padding:10px 11px}.fxh-home-share-copy span{font-size:10px}.fxh-home-share button{padding:8px 10px}.fxh-beta-modal{padding:19px;border-radius:18px}.fxh-beta-modal h2{font-size:23px}.fxh-feedback-star{font-size:34px;min-width:34px}.fxh-beta-inline{gap:7px;margin-top:10px}.fxh-beta-profile-panel{margin:12px 20px 16px;align-items:flex-start;flex-direction:column}.fxh-beta-profile-actions{width:100%;flex-wrap:wrap}.fxh-beta-profile-actions button{flex:1 1 calc(50% - 4px);padding-left:10px;padding-right:10px}}
+      @media(max-width:420px){.fxh-home-share{width:calc(100% - 32px);margin-top:10px;margin-bottom:18px;padding:10px 11px;align-items:flex-start}.fxh-home-share-copy span{font-size:10px}.fxh-home-share-actions{flex-direction:column;align-items:stretch;gap:6px}.fxh-home-share button{padding:8px 10px;min-height:34px}.fxh-beta-modal{padding:19px;border-radius:18px}.fxh-beta-modal h2{font-size:23px}.fxh-feedback-star{font-size:34px;min-width:34px}.fxh-beta-inline{gap:7px;margin-top:10px}.fxh-beta-profile-panel{margin:12px 20px 16px;align-items:flex-start;flex-direction:column}.fxh-beta-profile-actions{width:100%;flex-wrap:wrap}.fxh-beta-profile-actions button{flex:1 1 calc(50% - 4px);padding-left:10px;padding-right:10px}}
       @media(display-mode:standalone){.fxh-beta-inline .fxh-install,.fxh-beta-profile-panel .fxh-install{display:none}}
     `;
     document.head.appendChild(style);
@@ -514,11 +514,21 @@
     copy.className = 'fxh-home-share-copy';
     copy.innerHTML = '<strong>Enjoying FXH CAM?</strong><span>Share the Public Beta with a friend.</span>';
 
-    const button = makeButton('↗ SHARE', '', shareApp);
-    button.setAttribute('aria-label', 'Share FXH CAM with a friend');
+    const actions = document.createElement('div');
+    actions.className = 'fxh-home-share-actions';
+
+    const shareButton = makeButton('↗ SHARE', '', shareApp);
+    shareButton.setAttribute('aria-label', 'Share FXH CAM with a friend');
+    actions.appendChild(shareButton);
+
+    if (!isStandalone()) {
+      const installButton = makeButton('INSTALL', 'fxh-home-install', installApp);
+      installButton.setAttribute('aria-label', 'Install FXH CAM as an app');
+      actions.appendChild(installButton);
+    }
 
     card.appendChild(copy);
-    card.appendChild(button);
+    card.appendChild(actions);
     start.insertAdjacentElement('afterend', card);
   }
 
