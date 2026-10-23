@@ -1,0 +1,144 @@
+
+/* v94 patch: cleaner analog camera preview + visible install button */
+.phone.cameraScreenActive .cameraV12Stage .gridFinderOverlay,
+.phone.cameraScreenActive .cameraV12Stage .cameraCompositionGrid,
+.phone.cameraScreenActive .cameraV12Stage .rangeFinderOverlay {
+  display: none !important;
+}
+
+.phone.analog.cameraScreenActive .cameraV12Stage {
+  overflow: hidden !important;
+  background: #070707 !important;
+}
+
+.phone.analog.cameraScreenActive .cameraV12Stage video,
+.phone.analog.cameraScreenActive .cameraV12Stage canvas {
+  filter: sepia(0.12) saturate(0.88) contrast(0.92) brightness(0.96) blur(0.12px) !important;
+  transform: translateZ(0);
+}
+
+.phone.analog.cameraScreenActive .cameraV12Stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, transparent 0 46%, rgba(0,0,0,0.08) 68%, rgba(0,0,0,0.22) 100%),
+    linear-gradient(to bottom, rgba(255, 227, 170, 0.025), rgba(0,0,0,0.02)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, rgba(0,0,0,0.012) 1px 2px, transparent 2px 4px);
+  mix-blend-mode: soft-light;
+}
+
+.phone.analog.cameraScreenActive .cameraV12Stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 30%, rgba(255, 196, 83, 0.055) 0 2px, transparent 2px 100%),
+    radial-gradient(circle at 67% 58%, rgba(255,255,255,0.045) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 84% 18%, rgba(255, 196, 83, 0.04) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 42% 72%, rgba(0,0,0,0.05) 0 1.3px, transparent 1.3px 100%);
+  opacity: 0.32;
+}
+
+.phone.analog.cameraScreenActive .analogViewfinderOverlay {
+  color: rgba(246, 236, 216, 0.82) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.55) !important;
+  filter: none !important;
+}
+
+.phone.analog.cameraScreenActive .analogViewfinderOverlay .vfTop,
+.phone.analog.cameraScreenActive .analogViewfinderOverlay .vfBottom {
+  letter-spacing: 0.55px !important;
+}
+
+.phone.analog.cameraScreenActive .analogViewfinderOverlay .vfTop {
+  top: 5.8% !important;
+  left: 7.5% !important;
+  right: 7.5% !important;
+  font-size: clamp(10px, 2.2vw, 17px) !important;
+}
+
+.phone.analog.cameraScreenActive .analogViewfinderOverlay .vfBottom {
+  bottom: 4.2% !important;
+  left: 7.5% !important;
+  right: 7.5% !important;
+  font-size: clamp(8px, 1.85vw, 14px) !important;
+}
+
+.phone.analog.cameraScreenActive .analogViewfinderOverlay .vfMeter {
+  left: 24% !important;
+  right: 24% !important;
+  bottom: 11.2% !important;
+  border-top: 1px solid rgba(245, 241, 230, 0.18) !important;
+}
+
+.phone.analog.cameraScreenActive .analogViewfinderOverlay .vfMeter b {
+  color: rgba(246,236,216,0.58) !important;
+  font-weight: 700 !important;
+}
+
+.phone.analog.cameraScreenActive .analogViewfinderOverlay .vfMeter em {
+  color: rgba(245, 196, 83, 0.85) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.45) !important;
+}
+
+.phone.analog.cameraScreenActive .analogViewfinderOverlay .vfFocus i {
+  width: clamp(22px, 5.6vw, 38px) !important;
+  height: clamp(22px, 5.6vw, 38px) !important;
+  border-width: 1.15px !important;
+  border-color: rgba(245, 196, 83, 0.36) !important;
+  color: rgba(245, 196, 83, 0.58) !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
+  opacity: 0.88 !important;
+}
+
+.phone.analog.cameraScreenActive .analogViewfinderOverlay .vfFocus i.locked {
+  border-color: rgba(245, 196, 83, 0.72) !important;
+  color: rgba(245, 196, 83, 0.92) !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 0 10px rgba(245,196,83,0.16) !important;
+}
+
+.fxh-floating-install {
+  position: fixed;
+  right: 14px;
+  bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(245,196,83,0.78);
+  background: rgba(17, 17, 15, 0.88);
+  color: #f5c453;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.32);
+  font-family: Barlow Condensed, Oswald, Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.fxh-floating-install.is-visible { display: inline-flex; }
+.fxh-floating-install:active { transform: scale(0.97); }
+.fxh-floating-install .fxh-install-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #f5c453;
+  box-shadow: 0 0 8px rgba(245,196,83,0.45);
+}
+@media (max-width: 420px) {
+  .fxh-floating-install {
+    right: 10px;
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    min-height: 38px;
+    padding: 9px 13px;
+    font-size: 13px;
+  }
+}
