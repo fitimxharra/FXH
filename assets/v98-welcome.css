@@ -1,0 +1,44 @@
+
+/* v98 one-time welcome popup */
+.fxh-welcome-backdrop{
+  position:fixed; inset:0; z-index:10050;
+  display:grid; place-items:center;
+  padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px));
+  background:rgba(4,5,4,.72);
+  backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px);
+}
+.fxh-welcome-card{
+  width:min(100%,420px); color:#f5efe0;
+  background:linear-gradient(180deg,rgba(15,18,16,.98),rgba(9,11,10,.99));
+  border:1px solid rgba(245,196,83,.42); border-radius:24px;
+  box-shadow:0 24px 80px rgba(0,0,0,.55);
+  padding:22px 20px 18px;
+  font-family:Barlow Condensed,Oswald,Arial,sans-serif;
+}
+.fxh-welcome-kicker{
+  color:#f5c453; letter-spacing:.13em; text-transform:uppercase;
+  font-size:12px; font-weight:800; margin-bottom:9px;
+}
+.fxh-welcome-card h2{
+  margin:0; color:#fff1d1; font-family:Anton,Impact,sans-serif;
+  font-size:clamp(30px,8vw,42px); font-weight:400; line-height:1.02;
+}
+.fxh-welcome-lead{
+  margin:10px 0 16px; color:#c8c5ba; font-size:17px; line-height:1.35;
+}
+.fxh-welcome-points{display:grid;gap:9px;margin:0 0 18px;padding:0;list-style:none}
+.fxh-welcome-points li{
+  display:grid; grid-template-columns:24px minmax(0,1fr); gap:9px; align-items:start;
+  color:#ece8de; font-size:15px; line-height:1.3;
+}
+.fxh-welcome-points b{color:#f5c453;font-weight:800}
+.fxh-welcome-icon{color:#f5c453;font-weight:900;text-align:center}
+.fxh-welcome-actions{display:grid;gap:9px}
+.fxh-welcome-actions button{
+  width:100%; min-height:48px; border-radius:14px; cursor:pointer;
+  font-family:Anton,Impact,sans-serif; font-size:18px; letter-spacing:.02em;
+}
+.fxh-welcome-install{background:#f5c518;color:#11110f;border:0}
+.fxh-welcome-continue{background:transparent;color:#f2eee3;border:1px solid rgba(245,196,83,.32)}
+.fxh-welcome-note{margin:10px 2px 0;color:#817f78;text-align:center;font-size:11px;line-height:1.25}
+@media(max-width:380px){.fxh-welcome-card{padding:19px 16px 16px}.fxh-welcome-lead{font-size:15px}.fxh-welcome-points li{font-size:14px}}

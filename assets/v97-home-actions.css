@@ -1,0 +1,54 @@
+
+/* FXH CAM v97 — compact install-first action bar */
+#fxhV97HomeActions{
+  box-sizing:border-box;
+  width:min(92%,560px);
+  margin:12px auto 0;
+  padding:7px 8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  background:rgba(10,14,12,.90);
+  border:1px solid rgba(255,198,83,.34);
+  border-radius:999px;
+  box-shadow:0 5px 16px rgba(0,0,0,.18);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+#fxhV97HomeActions button{
+  -webkit-tap-highlight-color:transparent;
+  appearance:none;
+  border-radius:999px;
+  min-height:36px;
+  padding:7px 14px;
+  font-family:Barlow Condensed,Oswald,Arial,sans-serif;
+  font-size:12px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:.045em;
+  white-space:nowrap;
+  cursor:pointer;
+}
+#fxhV97HomeActions .fxh-v97-install{
+  flex:1 1 auto;
+  background:#ffc653;
+  border:1px solid #ffc653;
+  color:#16120a;
+}
+#fxhV97HomeActions .fxh-v97-share{
+  flex:0 0 auto;
+  background:transparent;
+  border:1px solid rgba(255,198,83,.58);
+  color:#ffc653;
+  padding-inline:13px;
+}
+#fxhV97HomeActions button:active{transform:scale(.97)}
+@media (max-width:380px){
+  #fxhV97HomeActions{width:94%;margin-top:9px;padding:6px;gap:6px}
+  #fxhV97HomeActions button{min-height:34px;padding:6px 11px;font-size:11px}
+}
+@media (display-mode:standalone){
+  #fxhV97HomeActions .fxh-v97-install{display:none}
+  #fxhV97HomeActions .fxh-v97-share{flex:1 1 auto}
+}
