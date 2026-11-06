@@ -1,0 +1,23 @@
+FXH CAM v103 — GitHub Pages update (06 November 2026)
+
+WHAT'S NEW
+* Redesigned interactive homepage from selected reference image.
+* Three direct camera modes: CREATE PHOTO (Instant/Polaroid), SHOOT FILM (35MM), RECORD VIDEO (VHS).
+* Top mode selector still works.
+* Bottom navigation: Home, Gallery, Lab, Profile.
+* No INSTALL APP CTA. Compact GIVE FEEDBACK opens the rating dialog; sharing available only inside feedback.
+* PWA underlying files remain intact (as in previous beta).
+* SHARE only in the rating/feedback popup (including success state).
+* First-visit welcome popup: Public Beta is FREE until 31 December 2026, no installation required.
+* Existing camera, photos, film processing, storage, VHS, Gallery, Lab preserved.
+
+GITHUB DEPLOYMENT
+1. Unzip archive locally.
+2. Upload/replace each file into fitimxharra/FXH main branch, preserving assets/ folder.
+3. Commit changes and wait for GitHub Pages deployment to complete.
+4. Open https://app.fitimxharra.com and refresh. Existing locally stored photos should remain intact.
+
+DO NOT clear site storage to refresh: it deletes locally stored photos and preferences.
+
+NOTE: Web browsers may still allow manual 'Add to Home Screen' via their own menus;
+the app no longer advertises installation in its interface.
