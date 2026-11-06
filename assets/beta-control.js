@@ -417,6 +417,7 @@
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-actions';
     actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', () => openFeedback({ auto: false })));
+    actions.appendChild(makeButton('SHARE WITH A FRIEND', 'fxh-beta-secondary', shareApp));
     actions.appendChild(makeButton('CONTINUE TESTING', 'fxh-beta-ghost', closeModal));
     box.appendChild(actions);
     const small = document.createElement('small');
@@ -481,6 +482,7 @@
     actions.className = 'fxh-beta-actions';
     actions.appendChild(makeButton('OPEN MY GALLERY', 'fxh-beta-primary', openGallery));
     actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', () => openFeedback({ auto: false })));
+    actions.appendChild(makeButton('SHARE FXH CAM', 'fxh-beta-secondary', shareApp));
     if (remoteStatus && remoteStatus.next_url) {
       const a = document.createElement('a');
       a.className = 'fxh-beta-secondary';
@@ -529,7 +531,6 @@
     document.getElementById('fxhBetaDock')?.remove();
     document.getElementById('fxhBetaInline')?.remove();
     document.getElementById('fxhHomeShareCard')?.remove();
-    document.getElementById('fxhV97HomeActions')?.remove();
 
     const existing = document.getElementById('fxhBetaProfileCard');
     const profile = document.querySelector('.profileV13') || document.querySelector('.profileScreen');
@@ -555,6 +556,7 @@
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-profile-actions';
     actions.appendChild(makeButton('★ RATE BETA', 'fxh-rate', () => openFeedback({ auto: false })));
+    actions.appendChild(makeButton('SHARE APP', '', shareApp));
 
     card.appendChild(copy);
     card.appendChild(actions);
@@ -570,7 +572,7 @@
       const btn = event.target && event.target.closest ? event.target.closest('button') : null;
       if (!btn) return;
       const label = `${btn.getAttribute('aria-label') || ''} ${btn.textContent || ''}`.trim().toUpperCase();
-      const blocked = label.includes('CREATE PHOTO') || label.includes('SHOOT FILM') || label.includes('START SHOOTING') || label === '35MM' || label.includes('POLAROID') || label === 'VHS' || label.includes('SHUTTER') || label.includes('RECORD');
+      const blocked = label.includes('START SHOOTING') || label === '35MM' || label.includes('POLAROID') || label === 'VHS' || label.includes('SHUTTER') || label.includes('RECORD');
       if (!blocked) return;
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -599,8 +601,6 @@
     if (isBlocked()) showEndedModal();
     else startFeedbackUsageTimer();
   }
-
-  document.addEventListener('fxh:open-feedback', () => openFeedback({ auto: false }));
 
   patchCameraAccess();
   blockExpiredActions();
