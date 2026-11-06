@@ -10,8 +10,8 @@
   const SHARE_URL = 'https://app.fitimxharra.com';
   const FEEDBACK_SUBMITTED_KEY = 'fxhcam:feedbackSubmitted:v1';
   const FEEDBACK_COOLDOWN_KEY = 'fxhcam:feedbackAutoCooldownUntil:v1';
-  const FIRST_FEEDBACK_PROMPT_SECONDS = 60;
-  const SECOND_FEEDBACK_DELAY_SECONDS = 120;
+  const FIRST_FEEDBACK_PROMPT_SECONDS = 120;
+  const SECOND_FEEDBACK_DELAY_SECONDS = 300;
   let remoteStatus = null;
   let deferredInstallPrompt = null;
   let originalGetUserMedia = null;
@@ -357,6 +357,7 @@
     }
 
     actions.appendChild(submit);
+    actions.appendChild(makeButton('SHARE FXH CAM', 'fxh-beta-secondary', shareApp));
     actions.appendChild(makeButton(autoPrompt ? 'NOT NOW' : 'CANCEL', 'fxh-beta-ghost', () => {
       closeModal();
       if (autoPrompt) {
@@ -415,7 +416,6 @@
     `;
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-actions';
-    actions.appendChild(makeButton(isStandalone() ? 'APP INSTALLED' : 'INSTALL FXH CAM', 'fxh-beta-primary', installApp));
     actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', () => openFeedback({ auto: false })));
     actions.appendChild(makeButton('SHARE WITH A FRIEND', 'fxh-beta-secondary', shareApp));
     actions.appendChild(makeButton('CONTINUE TESTING', 'fxh-beta-ghost', closeModal));
@@ -512,16 +512,10 @@
 
     const copy = document.createElement('div');
     copy.className = 'fxh-home-share-copy';
-    copy.innerHTML = '<strong>FXH CAM</strong><span>Install or share the beta.</span>';
+    copy.innerHTML = '<strong>FXH CAM</strong><span>Share the Public Beta.</span>';
 
     const actions = document.createElement('div');
     actions.className = 'fxh-home-share-actions';
-
-    if (!isStandalone()) {
-      const installButton = makeButton('INSTALL APP', 'fxh-home-install', installApp);
-      installButton.setAttribute('aria-label', 'Install FXH CAM as an app');
-      actions.appendChild(installButton);
-    }
 
     const shareButton = makeButton('↗ SHARE', '', shareApp);
     shareButton.setAttribute('aria-label', 'Share FXH CAM with a friend');
@@ -536,7 +530,7 @@
     // Remove the old floating/hero controls from earlier beta builds.
     document.getElementById('fxhBetaDock')?.remove();
     document.getElementById('fxhBetaInline')?.remove();
-    mountHomeShare();
+    document.getElementById('fxhHomeShareCard')?.remove();
 
     const existing = document.getElementById('fxhBetaProfileCard');
     const profile = document.querySelector('.profileV13') || document.querySelector('.profileScreen');
@@ -547,8 +541,6 @@
     }
 
     if (existing && profile.contains(existing)) {
-      const install = existing.querySelector('.fxh-install');
-      if (install) install.style.display = isStandalone() ? 'none' : '';
       return;
     }
     if (existing) existing.remove();
@@ -565,7 +557,6 @@
     actions.className = 'fxh-beta-profile-actions';
     actions.appendChild(makeButton('★ RATE BETA', 'fxh-rate', () => openFeedback({ auto: false })));
     actions.appendChild(makeButton('SHARE APP', '', shareApp));
-    if (!isStandalone()) actions.appendChild(makeButton('INSTALL APP', 'fxh-install', installApp));
 
     card.appendChild(copy);
     card.appendChild(actions);
@@ -610,17 +601,6 @@
     if (isBlocked()) showEndedModal();
     else startFeedbackUsageTimer();
   }
-
-  window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();
-    deferredInstallPrompt = event;
-    mountInlineControls();
-  });
-  window.addEventListener('appinstalled', () => {
-    deferredInstallPrompt = null;
-    mountInlineControls();
-    closeModal();
-  });
 
   patchCameraAccess();
   blockExpiredActions();
