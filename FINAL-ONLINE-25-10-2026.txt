@@ -1,0 +1,29 @@
+FXH CAM — FINAL ONLINE 25/10/2026
+=================================
+
+Master backup of the complete online version of FXH CAM.
+Domain: https://app.fitimxharra.com
+Build state: Public Beta / v100
+Backup date: 25 October 2026
+
+This archive contains the complete application, including:
+- 35mm camera
+- Polaroid mode
+- VHS mode
+- Gallery and Film Lab
+- Film stocks and live film preview
+- One-time welcome popup
+- Install App / PWA support
+- Share App controls
+- Public Beta feedback flow
+- Public Beta expiry/status control
+- Privacy page
+- Application icons and manifest
+- Service worker / offline shell
+- Images, sounds, fonts and all supporting assets
+
+Latest included change:
+- Film selection updates the live viewfinder immediately, before pressing DONE.
+- Single Install/Share entrance control.
+
+Keep this ZIP as the master backup of the online app as of 25/10/2026.

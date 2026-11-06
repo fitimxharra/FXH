@@ -2,18 +2,42 @@
   "id": "/",
   "name": "FXH CAM — Public Beta",
   "short_name": "FXH CAM",
-  "description": "Shoot the moment. Keep the feeling. Free FXH CAM Public Beta through 31 December 2026 — 35mm film, instant photography and VHS-inspired video.",
+  "description": "Make moments timeless. Free FXH CAM Public Beta through 31 December 2026 — 35mm film, instant photography and VHS-inspired video.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#050706",
   "theme_color": "#050706",
-  "categories": ["photo", "photography", "entertainment"],
+  "categories": [
+    "photo",
+    "photography",
+    "entertainment"
+  ],
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

@@ -1,0 +1,16 @@
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+
+AddType application/manifest+json .webmanifest
+AddType application/javascript .js
+
+<IfModule mod_headers.c>
+  <FilesMatch "^(index\.html|sw\.js|manifest\.webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
