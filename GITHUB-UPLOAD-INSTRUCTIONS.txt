@@ -1,0 +1,12 @@
+FXH CAM v102 — GitHub update
+
+Replace only these files, preserving the assets folder:
+- index.html
+- sw.js
+- assets/beta-control.js
+
+Changes:
+- SHARE removed from the home/first page.
+- SHARE FXH CAM added inside the feedback window.
+- SHARE remains available after feedback submission.
+- No other app functionality or design changed.
