@@ -1,0 +1,24 @@
+FXH CAM — v102 RECOVERED / PORTRAIT & LANDSCAPE FIX (15 NOV 2026)
+
+Base: v102 online version with VHS microphone and creative Lab filters.
+Reference: archived v103 camera/orientation code.
+
+CHANGES
+- Physical portrait and landscape now drive camera layout: no forced sideways CSS rotation.
+- Horizontal button attempts OS landscape lock only when available; older phones can
+  rotate physically and use the camera without fullscreen/Screen Orientation API.
+- Portrait restores original width and proportions immediately.
+- Removed previous legacy landscape overrides that conflicted with existing styles.
+- De-duplicated footer CSS and preserved six equally sized navigation buttons.
+- Preserved VHS microphone, MP4/WebM selection, Lab photo filters, Gallery and feedback.
+- Service worker cache updated to force a clean application shell load.
+
+INSTALLATION
+Upload all archive contents (not the parent folder) to the website root / public_html.
+Keep the same site origin so that existing IndexedDB Gallery entries remain.
+Do not clear browser site data. If app appears stale, close and reopen installed PWA
+(or refresh twice after service worker activates).
+
+LIMITS
+Orientation-lock features are not provided by every browser. The physical phone
+rotation is supported without relying on those APIs. Test on physical older devices.

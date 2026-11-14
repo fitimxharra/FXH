@@ -1,0 +1,14 @@
+FXH CAM v102 — ORIGINAL ONLINE DESIGN + FOOTER & LAB FILTERS (15 November 2026)
+
+BASE: FXH-CAM-v102-ONLINE-RIKTHYER-AUDIO-LANDSCAPE-14-11-2026.zip
+
+Changes:
+1. Fixed-size footer with SIX equal tabs and bottom anchoring. Adapts to small mobile widths without switching between 5 and 6 columns; preserves original camera color schemes; footer remains hidden in landscape camera mode.
+2. New FILTERS control in photo Lab (35mm and Polaroid). Same 11 filters as the camera: None, Date Stamp, Light Leak, Double Leak, Corner Burn, RGB Night, Tungsten, Cross Process, Expired Film, Night Glow, Dust & Scratches.
+3. Adjustable intensity; selecting filters updates the Lab photo preview, Save/Download render effects into JPG using camera effects pipeline.
+4. Existing Film, Frame, Tone, Look, Gallery, Lab, feedback, microphone VHS and older phone landscape fixes retained.
+5. Service worker version bumped to load new assets.
+
+CHECKS: JS syntax, CSS structure and ZIP integrity tested. Automated browser preview was blocked by this environment; live photo capture on real iPhone/Android remains to be tested before replacing a production installation.
+
+DEPLOY: Unzip and upload CONTENTS to GitHub/Hostinger preserving directories. Do not clear browser data, to retain local Gallery on same domain.
