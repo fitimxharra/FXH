@@ -1,2 +1,3 @@
-FXH CAM v105 — Reliability fixes + new Home cover — 14 November 2026
-Based on v103 (Home redesign) from 06 November 2026.
+FXH CAM v106 — Home-only corrections — 14 November 2026
+Profile name/avatar synced with Profile; cover image cleanup; slight card spacing/mobile fit.
+All camera, Gallery, Lab, and Profile behavior otherwise unchanged.
