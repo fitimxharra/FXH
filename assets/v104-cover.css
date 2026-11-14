@@ -1,0 +1,118 @@
+/* v104 Home cover: the approved artwork with invisible tap areas on top.
+   The artwork is cut into fixed pieces (header, hero, cards, navigation) and three
+   plain background strips (z1, z2, z3). Only the strips change height, so the same
+   picture fits every phone: the spare height is shared between them instead of
+   leaving one large empty area. */
+.fxh-cover-on nav.bottomNav { visibility: hidden !important; pointer-events: none !important; }
+
+.fxh-cover {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 4;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  background: #0d0806;
+}
+
+.fxh-cover-col {
+  position: relative;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 560px;
+  min-height: 100%;
+  margin: 0 auto;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: #0d0806;
+}
+
+.fxh-cover-part {
+  position: relative;
+  flex: 0 0 auto;
+  line-height: 0;
+  font-size: 0;
+}
+
+.fxh-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+/* Stretchable background strips. Shares of the spare height: above the title 32%,
+   between the format bar and the cards 40%, above the navigation 28%. */
+.fxh-cover-z {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  background-color: #1a110c;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 100% 100%;
+}
+.fxh-cover-z1 { -webkit-box-flex: 32; flex: 32 0 0px; background-image: url("/assets/cover/cover-z1.webp?v=104"); }
+.fxh-cover-z2 { -webkit-box-flex: 40; flex: 40 0 0px; background-image: url("/assets/cover/cover-z2.webp?v=104"); min-height: 10px; }
+.fxh-cover-z3 { -webkit-box-flex: 28; flex: 28 0 0px; background-image: url("/assets/cover/cover-z3.webp?v=104"); }
+
+.fxh-cover-nav {
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #0d0806;
+}
+
+/* Invisible tap areas */
+.fxh-cover-hit {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  position: absolute;
+  display: block;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  background: transparent;
+  color: transparent;
+  font-size: 0;
+  cursor: pointer;
+  border-radius: 16px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.fxh-cover-hit:active { background: rgba(255, 255, 255, 0.12); }
+.fxh-cover-hit:focus-visible { outline: 2px solid #f5b800; outline-offset: -2px; }
+
+.fxh-hit-profile { left: 70.5%; top: 16%;  width: 25%;   height: 80%; border-radius: 999px; }
+.fxh-hit-tab-35  { left: 8.3%;  top: 84.7%;  width: 27%;   height: 12.8%; border-radius: 999px; }
+.fxh-hit-tab-ins { left: 35.3%; top: 84.7%;  width: 30.6%; height: 12.8%; border-radius: 999px; }
+.fxh-hit-tab-vhs { left: 65.9%; top: 84.7%;  width: 25.8%; height: 12.8%; border-radius: 999px; }
+
+.fxh-hit-card-ins { left: 2.4%;  top: 2%; width: 32%;   height: 96%; }
+.fxh-hit-card-35  { left: 34.8%; top: 2%; width: 31%;   height: 96%; }
+.fxh-hit-card-vhs { left: 66.6%; top: 2%; width: 31.2%; height: 96%; }
+
+.fxh-hit-nav-1, .fxh-hit-nav-2, .fxh-hit-nav-3, .fxh-hit-nav-4 { top: 6%; width: 25%; bottom: env(safe-area-inset-bottom, 0px); border-radius: 12px; }
+.fxh-hit-nav-1 { left: 0; }
+.fxh-hit-nav-2 { left: 25%; }
+.fxh-hit-nav-3 { left: 50%; }
+.fxh-hit-nav-4 { left: 75%; }
