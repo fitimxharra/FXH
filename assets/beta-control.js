@@ -6,12 +6,14 @@
   const INSTALL_KEY = 'fxhcam:betaIntroSeen:v2';
   // Recipient is intentionally not shown in the UI. After FormSubmit activation,
   // replace this encoded bootstrap address with FormSubmit's random endpoint token.
-  const FEEDBACK_ENDPOINT = 'https://formsubmit.co/' + atob('Zml0aW0ueGhhcnJhQGdtYWlsLmNvbQ==');
+  const FEEDBACK_ENDPOINT = 'https://formsubmit.co/ajax/' + atob('Zml0aW0ueGhhcnJhQGdtYWlsLmNvbQ==');
   const SHARE_URL = 'https://app.fitimxharra.com';
   const FEEDBACK_SUBMITTED_KEY = 'fxhcam:feedbackSubmitted:v1';
   const FEEDBACK_COOLDOWN_KEY = 'fxhcam:feedbackAutoCooldownUntil:v1';
   const FIRST_FEEDBACK_PROMPT_SECONDS = 120;
   const SECOND_FEEDBACK_DELAY_SECONDS = 300;
+  const CLOCK_FLOOR_KEY = 'fxhcam:clockFloor:v1';
+  let clockOffset = 0;
   let remoteStatus = null;
   let deferredInstallPrompt = null;
   let originalGetUserMedia = null;
@@ -30,8 +32,18 @@
     return /iphone|ipad|ipod/i.test(navigator.userAgent || '');
   }
 
+  // Current time, corrected with the last server time we saw (see loadRemoteStatus).
+  function now() {
+    let t = Date.now() + clockOffset;
+    try {
+      const floor = Number(localStorage.getItem(CLOCK_FLOOR_KEY) || 0);
+      if (Number.isFinite(floor) && floor > t) t = floor;
+    } catch (_) {}
+    return t;
+  }
+
   function isExpiredByDate() {
-    return Date.now() >= BETA_END;
+    return now() >= BETA_END;
   }
 
   function isBlocked() {
@@ -39,7 +51,7 @@
     if (remoteStatus && remoteStatus.active === false) return true;
     if (remoteStatus && remoteStatus.expires_at) {
       const t = Date.parse(remoteStatus.expires_at);
-      if (Number.isFinite(t) && Date.now() >= t) return true;
+      if (Number.isFinite(t) && now() >= t) return true;
     }
     return false;
   }
@@ -259,21 +271,6 @@
       status.hidden = true;
       status.className = 'fxh-feedback-status';
 
-      const frameName = `fxhFeedbackFrame_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-      const iframe = document.createElement('iframe');
-      iframe.name = frameName;
-      iframe.title = 'FXH CAM feedback submission';
-      iframe.setAttribute('aria-hidden', 'true');
-      iframe.tabIndex = -1;
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = FEEDBACK_ENDPOINT;
-      form.target = frameName;
-      form.style.display = 'none';
-
       const fields = {
         _subject: `FXH CAM Public Beta — ${rating}/5 stars`,
         _template: 'table',
@@ -286,49 +283,51 @@
         device: navigator.userAgent
       };
 
-      Object.entries(fields).forEach(([name, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        input.value = value;
-        form.appendChild(input);
-      });
-      document.body.appendChild(form);
-
-      try {
-        form.submit();
-      } catch (_) {
+      const fail = (message) => {
         submitting = false;
         submit.disabled = false;
         submit.textContent = 'TRY AGAIN';
         status.hidden = false;
         status.className = 'fxh-feedback-status is-error';
-        status.textContent = 'Could not start feedback delivery. Please try again.';
-        form.remove();
-        iframe.remove();
-        return;
-      }
+        status.textContent = message;
+      };
 
-      // Do not hold the user on a cross-origin response. The submission continues
-      // in the hidden frame while FXH CAM immediately acknowledges the action.
-      setTimeout(() => {
-        try { localStorage.setItem(FEEDBACK_SUBMITTED_KEY, '1'); } catch (_) {}
-        if (feedbackUsageTimer) { clearInterval(feedbackUsageTimer); feedbackUsageTimer = null; }
-        feedbackAutoStage = 2;
+      const controller = typeof AbortController === 'function' ? new AbortController() : null;
+      const timeout = setTimeout(() => { if (controller) controller.abort(); }, 15000);
 
-        box.innerHTML = `
-          <div class="fxh-beta-kicker"><span class="fxh-beta-dot"></span> FEEDBACK SENT</div>
-          <h2>Thank you for making FXH CAM better.</h2>
-          <p>Your feedback has been submitted.</p>
-        `;
-        const doneActions = document.createElement('div');
-        doneActions.className = 'fxh-beta-actions';
-        doneActions.appendChild(makeButton('SHARE WITH A FRIEND', 'fxh-beta-primary', shareApp));
-        doneActions.appendChild(makeButton('CLOSE', 'fxh-beta-ghost', closeModal));
-        box.appendChild(doneActions);
+      fetch(FEEDBACK_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(fields),
+        signal: controller ? controller.signal : undefined
+      })
+        .then((res) => res.json().catch(() => ({})).then((data) => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+          // FormSubmit answers {"success":"true"} only when the message was accepted for delivery.
+          if (!ok || String(data && data.success) !== 'true') throw new Error((data && data.message) || 'Feedback was not accepted');
 
-        setTimeout(() => { form.remove(); iframe.remove(); }, 5000);
-      }, 650);
+          try { localStorage.setItem(FEEDBACK_SUBMITTED_KEY, '1'); } catch (_) {}
+          if (feedbackUsageTimer) { clearInterval(feedbackUsageTimer); feedbackUsageTimer = null; }
+          feedbackAutoStage = 2;
+
+          box.innerHTML = `
+            <div class="fxh-beta-kicker"><span class="fxh-beta-dot"></span> FEEDBACK SENT</div>
+            <h2>Thank you for making FXH CAM better.</h2>
+            <p>Your feedback has been submitted.</p>
+          `;
+          const doneActions = document.createElement('div');
+          doneActions.className = 'fxh-beta-actions';
+          doneActions.appendChild(makeButton('SHARE WITH A FRIEND', 'fxh-beta-primary', shareApp));
+          doneActions.appendChild(makeButton('CLOSE', 'fxh-beta-ghost', closeModal));
+          box.appendChild(doneActions);
+        })
+        .catch((err) => {
+          console.warn('fxhcam: feedback was not delivered', err);
+          fail(navigator.onLine === false
+            ? 'You appear to be offline. Connect to the internet and try again.'
+            : 'Your feedback could not be sent. Please try again in a moment.');
+        })
+        .finally(() => clearTimeout(timeout));
     });
     submit.disabled = true;
 
@@ -417,7 +416,6 @@
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-actions';
     actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', () => openFeedback({ auto: false })));
-    actions.appendChild(makeButton('SHARE WITH A FRIEND', 'fxh-beta-secondary', shareApp));
     actions.appendChild(makeButton('CONTINUE TESTING', 'fxh-beta-ghost', closeModal));
     box.appendChild(actions);
     const small = document.createElement('small');
@@ -447,6 +445,8 @@
       if (document.getElementById('fxhBetaModal')) return;
       activeUseSeconds += 1;
       if (feedbackAutoStage >= 2 || activeUseSeconds < nextFeedbackPromptAt) return;
+      // Wait until the user leaves the camera: a popup must never interrupt a shot or a recording.
+      if (document.querySelector('.cameraScreenActive')) return;
 
       if (feedbackAutoStage === 0) {
         feedbackAutoStage = 1;
@@ -482,7 +482,6 @@
     actions.className = 'fxh-beta-actions';
     actions.appendChild(makeButton('OPEN MY GALLERY', 'fxh-beta-primary', openGallery));
     actions.appendChild(makeButton('RATE & COMMENT', 'fxh-beta-secondary', () => openFeedback({ auto: false })));
-    actions.appendChild(makeButton('SHARE FXH CAM', 'fxh-beta-secondary', shareApp));
     if (remoteStatus && remoteStatus.next_url) {
       const a = document.createElement('a');
       a.className = 'fxh-beta-secondary';
@@ -531,6 +530,7 @@
     document.getElementById('fxhBetaDock')?.remove();
     document.getElementById('fxhBetaInline')?.remove();
     document.getElementById('fxhHomeShareCard')?.remove();
+    document.getElementById('fxhV97HomeActions')?.remove();
 
     const existing = document.getElementById('fxhBetaProfileCard');
     const profile = document.querySelector('.profileV13') || document.querySelector('.profileScreen');
@@ -556,7 +556,6 @@
     const actions = document.createElement('div');
     actions.className = 'fxh-beta-profile-actions';
     actions.appendChild(makeButton('★ RATE BETA', 'fxh-rate', () => openFeedback({ auto: false })));
-    actions.appendChild(makeButton('SHARE APP', '', shareApp));
 
     card.appendChild(copy);
     card.appendChild(actions);
@@ -572,7 +571,7 @@
       const btn = event.target && event.target.closest ? event.target.closest('button') : null;
       if (!btn) return;
       const label = `${btn.getAttribute('aria-label') || ''} ${btn.textContent || ''}`.trim().toUpperCase();
-      const blocked = label.includes('START SHOOTING') || label === '35MM' || label.includes('POLAROID') || label === 'VHS' || label.includes('SHUTTER') || label.includes('RECORD');
+      const blocked = label.includes('CREATE PHOTO') || label.includes('SHOOT FILM') || label.includes('START SHOOTING') || label === '35MM' || label.includes('POLAROID') || label === 'VHS' || label.includes('SHUTTER') || label.includes('RECORD');
       if (!blocked) return;
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -584,6 +583,12 @@
     try {
       const res = await fetch(`${STATUS_URL}?v=${Date.now()}`, { cache: 'no-store', credentials: 'same-origin' });
       if (!res.ok) return;
+      const serverTime = Date.parse(res.headers.get('Date') || '');
+      if (Number.isFinite(serverTime)) {
+        const diff = serverTime - Date.now();
+        clockOffset = Math.abs(diff) > 5 * 60 * 1000 ? diff : 0;
+        try { localStorage.setItem(CLOCK_FLOOR_KEY, String(serverTime)); } catch (_) {}
+      }
       remoteStatus = await res.json();
       if (isBlocked()) showEndedModal();
     } catch (_) {
@@ -601,6 +606,8 @@
     if (isBlocked()) showEndedModal();
     else startFeedbackUsageTimer();
   }
+
+  document.addEventListener('fxh:open-feedback', () => openFeedback({ auto: false }));
 
   patchCameraAccess();
   blockExpiredActions();
