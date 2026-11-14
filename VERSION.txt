@@ -1,9 +1,2 @@
-FXH CAM — FINAL ONLINE 25/10/2026
-Version: v100
-Domain: app.fitimxharra.com
-Master backup date: 25 October 2026
-
-v101 — 30 Oct 2026
-- Install CTA hidden during Public Beta
-- Feedback auto prompts: 2 min, then +5 min, then 24h cooldown
-- Public Beta notice appears on every fresh page open
+FXH CAM v104 — Reliability fixes — 14 November 2026
+Based on v103 (Home redesign) from 06 November 2026.
