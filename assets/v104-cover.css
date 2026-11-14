@@ -116,3 +116,72 @@
 .fxh-hit-nav-2 { left: 25%; }
 .fxh-hit-nav-3 { left: 50%; }
 .fxh-hit-nav-4 { left: 75%; }
+
+/* v106 targeted Home corrections. The cover artwork remains untouched, while
+   profile text and photo are real elements bound to the saved Profile fields. */
+.fxh-cover-head { isolation: isolate; }
+.fxh-cover-user {
+  position: absolute;
+  z-index: 2;
+  left: 70%; right: 4.3%;
+  top: 9%; height: 85%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1vw, 10px);
+  padding: 0 clamp(2px, .55vw, 6px);
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #15120f 0%, #0b0b0a 48%, #090a0a 100%);
+  box-shadow: -5px 0 12px 2px #100d0c;
+  color: #f6ede0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  font-size: clamp(11px, 3.1vw, 17px);
+  line-height: 1.15;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.fxh-cover-user:focus-visible { outline: 2px solid #f4c56a; outline-offset: 2px; }
+.fxh-cover-user-avatar {
+  display: flex !important;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: clamp(26px, 7.2vw, 42px) !important;
+  height: clamp(26px, 7.2vw, 42px) !important;
+  border: 1px solid #c3a16a !important;
+  border-radius: 50%;
+  object-fit: cover;
+  background: linear-gradient(140deg, #947044, #29231d);
+  color: #fff2d3;
+  font-size: .78em;
+  font-weight: 600;
+  line-height: 1;
+  overflow: hidden;
+}
+.fxh-cover-user-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+.fxh-cover-user-chevron { flex: 0 0 auto; width: 7px; height: 7px; border-right: 2px solid #f4ecdc; border-bottom: 2px solid #f4ecdc; transform: rotate(45deg) translateY(-2px); margin-right: 2px; }
+
+/* Hide the decorative floating Polaroid at the hero's upper right. No film,
+   camera, or page interaction is changed. The fill echoes the warm dark backdrop. */
+.fxh-cover-remove-polaroid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 8% 11% at 80% 28%, #180f0b 0%, #160d0a 64%, transparent 100%),
+    radial-gradient(ellipse 16% 26% at 94% 36%, #1a100c 0%, #160e0b 64%, transparent 100%),
+    radial-gradient(ellipse 32% 45% at 106% 16%, #150e0b 0%, #180e0b 76%, transparent 100%);
+}
+
+/* Give the three feature cards a little more breathing room below the modes.
+   Flexed strips still absorb spare height on taller devices; short phones scroll. */
+.fxh-cover-z1 { flex-grow: 27; }
+.fxh-cover-z2 { flex-grow: 49; min-height: clamp(18px, 5vw, 30px); }
+.fxh-cover-z3 { flex-grow: 24; }
+@media (max-width: 360px) {
+  .fxh-cover-user { left: 69.5%; right: 3%; gap: 4px; font-size: 11px; }
+  .fxh-cover-user-avatar { width: 25px !important; height: 25px !important; }
+  .fxh-cover-z2 { min-height: 16px; }
+}
