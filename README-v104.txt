@@ -23,12 +23,30 @@ FIXED
 * Link previews: Open Graph tags added (og.jpg).
 * Privacy page: microphone, FormSubmit and Google Fonts described.
 
+NEW HOME (cover)
+* Home is now the approved artwork shown as a picture, with invisible tap areas:
+  the three cards and the 35MM / INSTANT / VHS bar open the cameras, the menu and
+  the profile chip open Gallery, Lab and Profile.
+* The picture is cut into pieces (assets/cover/). Three plain background strips
+  change height, so it fits iPhone 13 and newer and Samsung S22/A54 and newer
+  without scrolling.
+* The beach photo is placed in both polaroids; the format bar sits lower.
+* The name in the profile chip and the selected INSTANT tab are part of the picture.
+* "Give feedback" is no longer on Home (the automatic rating prompt remains).
+
+PHONE COMPATIBILITY
+* iPhone: browsers on iOS do not apply canvas filters, so the film look was missing
+  from saved photos and videos. assets/canvas-filter-fallback.js now applies it.
+* Styles: fallbacks for older browsers (viewport units, media-query syntax).
+* Minimum: iOS 15.4 / Chrome 105 / Samsung Internet 20.
+
 DEPLOY (GitHub Pages)
 1. Upload/replace all files with their original paths (keep assets/, images/, sounds/).
 2. These files are no longer used and can be deleted from the repository:
    assets/v98-welcome.js, assets/vhs-home-coral.webp,
    images/canon-ae1-final.png, images/canon-ae1-interface.png,
-   images/fxh-cam-logo.png, images/vhs-landing-bg.webp
+   images/fxh-cam-logo.png, images/vhs-landing-bg.webp,
+   assets/fxh-v103-hero.webp
 3. Wait for the Pages deployment, then open https://app.fitimxharra.com.
 
 DO NOT clear site storage to refresh: it deletes locally stored photos.
