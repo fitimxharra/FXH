@@ -27,7 +27,7 @@ NEW HOME (cover)
 * Home is now the approved artwork shown as a picture, with invisible tap areas:
   the three cards and the 35MM / INSTANT / VHS bar open the cameras, the menu and
   the profile chip open Gallery, Lab and Profile.
-* The picture is cut into pieces (assets/cover/). Three plain background strips
+* The picture is cut into pieces (assets/cover-*.webp). Three plain background strips
   change height, so it fits iPhone 13 and newer and Samsung S22/A54 and newer
   without scrolling.
 * The beach photo is placed in both polaroids; the format bar sits lower.

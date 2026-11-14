@@ -1,2 +1,2 @@
-FXH CAM v104 — Reliability fixes — 14 November 2026
+FXH CAM v105 — Reliability fixes + new Home cover — 14 November 2026
 Based on v103 (Home redesign) from 06 November 2026.
