@@ -1,0 +1,51 @@
+/* FXH CAM v102 restoration: horizontal camera on older phones. */
+html,body{min-height:100%;}
+.phone.cameraScreenActive.analogLandscapeCam,
+html body .app .phone.cameraScreenActive.analogLandscapeCam{
+  transform:none!important;
+  width:100vw!important;
+  height:100vh!important; /* fallback for older iOS */
+  height:var(--fxh-viewport-height,100vh)!important;
+  min-width:0!important;
+  max-width:none!important;
+  top:0!important;left:0!important;
+}
+@media screen and (orientation:landscape) and (max-height:540px){
+  .phone.cameraScreenActive.analogLandscapeCam .cameraV12.cameraV122{
+    grid-template-columns:minmax(0,1fr) minmax(145px,32vw)!important;
+    grid-template-rows:38px minmax(0,1fr) 58px!important;
+    gap:3px 6px!important;
+    padding:4px 6px!important;
+    height:100%!important;
+    max-height:100%!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+  }
+  .phone.cameraScreenActive.analogLandscapeCam .cameraV12Header{min-height:34px!important;height:34px!important;padding:1px 4px!important}
+  .phone.cameraScreenActive.analogLandscapeCam .cameraV12StageWrap{
+    min-width:0!important;width:100%!important;min-height:0!important;height:100%!important;
+    grid-area:2/1/4!important;overflow:hidden!important;
+  }
+  .phone.cameraScreenActive.analogLandscapeCam .cameraV12Stage{
+    width:auto!important;max-width:100%!important;height:auto!important;max-height:100%!important;
+    aspect-ratio:4/3;object-fit:contain!important;
+  }
+  .phone.cameraScreenActive.analogLandscapeCam .cameraV12Controls{
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    max-height:calc(100vh - 44px)!important;overflow-y:auto!important;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  .phone.cameraScreenActive.analogLandscapeCam .cameraV12ShutterRow,
+  .phone.cameraScreenActive.analogLandscapeCam .cameraShutterDock{
+    min-width:0!important;max-width:100%!important;
+  }
+  .phone.cameraScreenActive.analogLandscapeCam button,
+  .phone.cameraScreenActive.analogLandscapeCam input {touch-action:manipulation}
+  .phone.cameraScreenActive.analogLandscapeCam .analogRotateHint{display:none!important}
+}
+/* iOS Safari: avoid an artificial sideways-rotated page and keep camera interaction accessible. */
+html body .app .phone.cameraScreenActive.analogLandscapeCam.analogTiltOnly{
+  transform:none!important;transform-origin:center!important;position:fixed!important;
+  width:100vw!important;height:var(--fxh-viewport-height,100vh)!important;top:0!important;left:0!important;
+}
