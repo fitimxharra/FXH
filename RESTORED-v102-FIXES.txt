@@ -1,0 +1,19 @@
+FXH CAM - RESTORED ONLINE v102 (02-11-2026)
+
+BASE: User-uploaded FXH-CAM-FINAL-ONLINE-02-11-2026-v102 (2).zip
+Original v102 home screen and UI retained.
+
+PATCHES:
+- VHS uses microphone audio and original VHS-filtered video where canvas.captureStream exists.
+- MP4 or WebM is selected by actual browser support; exports use matching MIME/extension.
+- Microphone permission is requested only on Record. When refused, the camera stays open and explains the error.
+- Lower capture requests on older phones; multi-step camera constraints fallback.
+- Portrait/landscape is natural and does not require forced OS rotation or fullscreen.
+- Compact landscape CSS for older/smaller iPhones/Android phones.
+- Original Gallery, Lab, films, beta settings, logos, assets and feedback code unchanged.
+- Service worker cache bumped so the original v102 page receives the repair.
+
+IMPORTANT:
+Camera and mic need HTTPS (or localhost). An iOS version without MediaRecorder will still take photos, but cannot record VHS video.
+Record a short VHS clip and open it in Gallery to test audio/codec on each actual phone.
+Uploading ZIP files to Hostinger/GitHub does not erase IndexedDB data, but avoid clearing site data / changing site origin to preserve local Gallery.

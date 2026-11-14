@@ -1,3 +1,9 @@
-FXH CAM v106 — Home-only corrections — 14 November 2026
-Profile name/avatar synced with Profile; cover image cleanup; slight card spacing/mobile fit.
-All camera, Gallery, Lab, and Profile behavior otherwise unchanged.
+FXH CAM — FINAL ONLINE 25/10/2026
+Version: v100
+Domain: app.fitimxharra.com
+Master backup date: 25 October 2026
+
+v101 — 30 Oct 2026
+- Install CTA hidden during Public Beta
+- Feedback auto prompts: 2 min, then +5 min, then 24h cooldown
+- Public Beta notice appears on every fresh page open
