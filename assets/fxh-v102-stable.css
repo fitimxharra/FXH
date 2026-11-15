@@ -18,3 +18,7 @@
 /* A Gallery warning must not cover the capture shutter. */
 html body .app > main.phone.cameraScreenActive > [role="alert"]{top:54px!important;bottom:auto!important;pointer-events:none!important;max-height:140px;overflow:auto}
 html body .app > main.phone.cameraScreenActive > [role="alert"] button{pointer-events:auto!important}
+
+/* Full View/Rotate feedback: transient hint when OS orientation lock is unavailable. */
+.fxh-orientation-notice{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(79px + env(safe-area-inset-bottom,0px));max-width:min(360px,90vw);z-index:9000;padding:10px 15px;border:1px solid #b08a4a;background:rgba(13,14,13,.96);color:#ffdd99;border-radius:999px;font:600 12px/1.4 system-ui,sans-serif;text-align:center;pointer-events:none;box-shadow:0 6px 18px #0009}
+@media (orientation:landscape){.fxh-orientation-notice{bottom:10px;max-width:min(420px,80vw)}}
