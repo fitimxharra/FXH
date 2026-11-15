@@ -1,5 +1,5 @@
 // bump this on every deploy so old caches get cleared
-const CACHE_NAME = "fxhcam-v102-stable-20261115-1";
+const CACHE_NAME = "fxhcam-v102-stable-vhs2fix-20261115-2";
 
 // Precache only the app shell. Mode photos load on demand and are
 // cached with stale-while-revalidate. Do not precache camera streams
@@ -99,7 +99,9 @@ const CORE_ASSETS = [
   "/assets/v98-welcome.css?v=102",
   "/assets/v98-welcome.js?v=102",
   "/assets/beta-control.js?v=102",
-  "/assets/app.js?v=20261115-stable1",
+  "/assets/app.js?v=20261115-vhs2fix",
+  "/assets/fxh-v102-stable.css?v=20261115-vhs2fix",
+  "/assets/fxh-pwa-update.js?v=20261115-vhs2fix",
   "/assets/index.css?v=102-restored-audio-landscape",
   "/assets/v95-camera.css?v=102-restored-audio-landscape",
   "/assets/v102-footer-lab-fix.css?v=102-footer-lab-20261115",
