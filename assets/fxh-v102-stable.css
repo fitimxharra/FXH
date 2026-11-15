@@ -1,0 +1,20 @@
+/* FXH CAM v102 Stable — only scoped fixes: no redesign. */
+.fxh-storage-download{display:block;margin-top:9px;min-height:34px;width:100%;border-radius:7px;border:1px solid #fff;background:#fff;color:#622;font-size:12px;font-weight:800}
+.fxh-mic-fallback{position:absolute;bottom:85px;left:50%;transform:translateX(-50%);z-index:110;min-height:44px;width:max-content;max-width:calc(100% - 24px);padding:8px 16px;border-radius:9px;border:1px solid #ffc653;background:#1b1810;color:#ffc653;box-shadow:0 8px 24px #0009;font-size:11px;font-weight:900;letter-spacing:.04em;cursor:pointer}
+.fxh-update-notice{position:fixed;z-index:9900;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:460px;margin:auto;padding:10px 12px;border:1px solid #bc9b58;border-radius:12px;background:#0d1612;color:#f6e7be;box-shadow:0 8px 25px #0008;font:600 12px system-ui,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.fxh-update-notice button{flex-shrink:0;min-height:36px;padding:5px 12px;border:0;border-radius:8px;background:#ffc653;color:#17150f;font-size:11px;font-weight:800}
+/* Polaroid is a true portrait-only camera, even if the device is turned sideways. */
+@media screen and (orientation:landscape){
+ body .app > main.phone.polaroid.cameraScreenActive::before{content:'';position:fixed;inset:0;z-index:8900;background:rgba(6,9,8,.94);pointer-events:auto}
+ body .app > main.phone.polaroid.cameraScreenActive::after{content:'POLAROID  ·  Rotate your phone to Portrait';position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:8901;max-width:80vw;color:#f6eee0;text-align:center;font:800 clamp(14px,2.7vw,22px)/1.5 system-ui,sans-serif;letter-spacing:.04em;pointer-events:none}
+ .fxh-mic-fallback{bottom:10px;left:50%;font-size:10px;max-width:75vw}
+}
+/* Device short heights must not cover the footer/capture CTA. */
+@media (max-height:550px) and (orientation:portrait){
+ body .app .phone .analog-landing .analog-content>.analog-start{min-height:40px!important;visibility:visible!important}
+}
+/* Status toasts are messages, not controls: never block Record without audio. */
+.cameraV12 .cameraToast,.cameraV12.cameraV122 .cameraToast{pointer-events:none!important}
+/* A Gallery warning must not cover the capture shutter. */
+html body .app > main.phone.cameraScreenActive > [role="alert"]{top:54px!important;bottom:auto!important;pointer-events:none!important;max-height:140px;overflow:auto}
+html body .app > main.phone.cameraScreenActive > [role="alert"] button{pointer-events:auto!important}
