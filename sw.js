@@ -1,5 +1,5 @@
 // bump this on every deploy so old caches get cleared
-const CACHE_NAME = "fxhcam-20261115-black-background-final-v1";
+const CACHE_NAME = "fxhcam-20261116-black-background-desktopfix-v2";
 
 // Precache only the app shell. Mode photos load on demand and are
 // cached with stale-while-revalidate. Do not precache camera streams
@@ -104,8 +104,8 @@ const CORE_ASSETS = [
   "/assets/v102-footer-lab-fix.css?v=102-footer-lab-20261115",
   "/assets/v102-orientation-stable.css?v=20261115-orientation2",
   "/assets/v102-home-vhs-visibility.css?v=20261115-homevhs1",
-  "/assets/app.js?v=20261115-black-background-final-v1",
-  "/assets/fxh-v102-stable.css?v=20261115-black-background-final-v1",
+  "/assets/app.js?v=20261116-black-background-desktopfix-v2",
+  "/assets/fxh-v102-stable.css?v=20261116-black-background-desktopfix-v2",
   "/assets/fxh-pwa-update.js?v=20261115-black-background-final-v1",
   "/assets/fxh-v102-stable.css",
   "/assets/fxh-pwa-update.js"

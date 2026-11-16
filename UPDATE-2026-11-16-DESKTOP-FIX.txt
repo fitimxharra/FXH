@@ -1,0 +1,10 @@
+FXH CAM update – 16 Nov 2026
+
+Included fixes:
+- desktop camera view constrained to a centered phone-sized layout
+- rotate/orientation hints limited to mobile-like devices
+- unsupported last three Film Lab frames removed
+- cache/service-worker version bumped to reduce stale asset issues
+
+Validation:
+- static bundle checks completed for dark and summer editions
