@@ -109,3 +109,39 @@ html body .app > main.phone.cameraScreenActive > [role="alert"] button{pointer-e
   .filmLabFrameGrid button{min-height:100px !important}
   .filmLabFrameGrid strong{width:58px !important;height:38px !important}
 }
+
+
+/* FXH CAM desktop companion layout fix (16-11-2026) */
+@media (pointer:fine) and (min-width:900px){
+  html body{background:#050706!important;}
+  html body .app{min-height:100vh;padding:16px 0;box-sizing:border-box;}
+  html body .app>main.phone{
+    width:min(430px,calc(100vw - 32px))!important;
+    max-width:430px!important;
+    min-width:320px!important;
+    height:min(920px,calc(100vh - 32px))!important;
+    max-height:min(920px,calc(100vh - 32px))!important;
+    margin:0 auto!important;
+    border-radius:28px!important;
+    border:1px solid rgba(255,255,255,.08)!important;
+    box-shadow:0 28px 60px rgba(0,0,0,.45)!important;
+    overflow:hidden!important;
+  }
+  html body .app>main.phone.cameraScreenActive,
+  html body .app>main.phone.cameraScreenActive:not(.analogLandscapeCam){
+    left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+    width:min(430px,calc(100vw - 32px))!important;
+    max-width:430px!important;
+    height:min(920px,calc(100vh - 32px))!important;
+    max-height:min(920px,calc(100vh - 32px))!important;
+  }
+  html body .app.appAnalogCam.appLandscape,
+  html body .app .phone.analogLandscapeCam{
+    width:min(430px,calc(100vw - 32px))!important;
+    max-width:430px!important;
+    height:min(920px,calc(100vh - 32px))!important;
+    max-height:min(920px,calc(100vh - 32px))!important;
+    margin:0 auto!important;
+  }
+  html body .app .phone .fxh-orientation-notice{display:none!important;}
+}
