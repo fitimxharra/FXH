@@ -145,3 +145,12 @@ html body .app > main.phone.cameraScreenActive > [role="alert"] button{pointer-e
   }
   html body .app .phone .fxh-orientation-notice{display:none!important;}
 }
+
+
+@media (pointer:fine) and (min-width:900px){
+  html body .app > main.phone.polaroid.cameraScreenActive::before,
+  html body .app > main.phone.polaroid.cameraScreenActive::after{
+    content:none!important;
+    display:none!important;
+  }
+}
